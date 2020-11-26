@@ -2,6 +2,7 @@ import firebase from "firebase";
 import { Module } from "vuex";
 import UserCredential = firebase.auth.UserCredential;
 import router from "../../router";
+import { ErrorType } from "@/modules/auth/error-type.enum";
 
 const UPDATE_USER = "UPDATE_USER";
 const SET_AUTH_ERROR = "SET_AUTH_ERROR";
@@ -11,11 +12,14 @@ const authStore: Module<any, any> = {
 
   state: {
     user: null,
-    error: null
+    errors: Object.keys(ErrorType).reduce(
+      (acc, type) => ({ ...acc, [type]: null }),
+      {}
+    )
   },
 
   getters: {
-    error: (state: any) => state.error,
+    errorOf: (state: any) => (key: ErrorType) => state.errors[key],
     isAuthenticated: (state: any) => state.user !== null
   },
 
@@ -26,8 +30,11 @@ const authStore: Module<any, any> = {
         ...userInfo
       };
     },
-    [SET_AUTH_ERROR](state: any, errorMessage) {
-      state.error = errorMessage;
+    [SET_AUTH_ERROR](state: any, { key, message }) {
+      state.errors = {
+        ...state.errors,
+        [key]: message
+      };
     }
   },
 
@@ -38,11 +45,14 @@ const authStore: Module<any, any> = {
         .signInWithEmailAndPassword(email, password)
         .then(({ user }: UserCredential) => {
           commit(UPDATE_USER, { name: user?.displayName, email: user?.email });
-          commit(SET_AUTH_ERROR, null);
+          commit(SET_AUTH_ERROR, { key: ErrorType.LOGIN, message: null });
           return router.push("/");
         })
         .catch((err: { message: string }) => {
-          commit(SET_AUTH_ERROR, err.message);
+          commit(SET_AUTH_ERROR, {
+            key: ErrorType.LOGIN,
+            message: err.message
+          });
         });
     },
 
@@ -52,9 +62,14 @@ const authStore: Module<any, any> = {
         .createUserWithEmailAndPassword(email, password)
         .then((data: firebase.auth.UserCredential) => {
           dispatch("updateUserProfile", { user: data.user, email, name });
+          commit(SET_AUTH_ERROR, { key: ErrorType.REGISTER, message: null });
+          return router.push("/");
         })
         .catch(err => {
-          commit(SET_AUTH_ERROR, err.message);
+          commit(SET_AUTH_ERROR, {
+            key: ErrorType.REGISTER,
+            message: err.message
+          });
         });
     },
 
@@ -78,9 +93,16 @@ const authStore: Module<any, any> = {
         ?.updateProfile({ displayName: name })
         .then(() => {
           commit(UPDATE_USER, { name, email });
+          commit(SET_AUTH_ERROR, {
+            key: [ErrorType.UPDATE_USER],
+            message: null
+          });
         })
         .catch((err: { message: string }) => {
-          commit(SET_AUTH_ERROR, err.message);
+          commit(SET_AUTH_ERROR, {
+            key: [ErrorType.UPDATE_USER],
+            message: err.message
+          });
         });
     }
   }

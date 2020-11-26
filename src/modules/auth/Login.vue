@@ -60,6 +60,7 @@
 
 <script lang="ts">
 import { Component, Vue } from "vue-property-decorator";
+import { ErrorType } from "@/modules/auth/error-type.enum";
 
 @Component
 export default class Login extends Vue {
@@ -69,7 +70,7 @@ export default class Login extends Vue {
   };
 
   get error() {
-    return this.$store.getters["auth/error"];
+    return this.$store.getters["auth/errorOf"](ErrorType.LOGIN);
   }
 
   submit() {

@@ -81,6 +81,7 @@
 
 <script lang="ts">
 import { Component, Vue } from "vue-property-decorator";
+import { ErrorType } from "@/modules/auth/error-type.enum";
 
 @Component
 export default class Register extends Vue {
@@ -90,7 +91,7 @@ export default class Register extends Vue {
     password: ""
   };
   get error() {
-    return this.$store.getters["auth/error"];
+    return this.$store.getters["auth/errorOf"](ErrorType.REGISTER);
   }
 
   submit() {
