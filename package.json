@@ -7,10 +7,12 @@
     "build": "vue-cli-service build",
     "test:unit": "vue-cli-service test:unit",
     "lint": "vue-cli-service lint",
-    "deploy": "firebase deploy"
+    "deploy": "firebase deploy",
+    "start-emulator": "firebase --project=skullking emulators:start"
   },
   "dependencies": {
     "core-js": "^3.6.5",
+    "firebase": "^8.1.1",
     "vue": "^2.6.11",
     "vue-class-component": "^7.2.3",
     "vue-property-decorator": "^8.4.2",

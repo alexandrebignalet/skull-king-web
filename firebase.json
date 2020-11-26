@@ -1,5 +1,6 @@
 {
   "hosting": {
+    "site": "skull-king",
     "public": "dist",
     "ignore": [
       "firebase.json",
@@ -12,5 +13,13 @@
         "destination": "/index.html"
       }
     ]
+  },
+  "emulators": {
+    "auth": {
+      "port": 9001
+    },
+    "ui": {
+      "enabled": true
+    }
   }
 }
