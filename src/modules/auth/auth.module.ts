@@ -1,9 +1,6 @@
 import firebase from "firebase";
 import store from "@/store";
 
-if (process.env.NODE_ENV === "development")
-  firebase.auth().useEmulator("http://localhost:9001/");
-
 export function watchCurrentUserAuthState(): Promise<boolean> {
   return new Promise((resolve, reject) => {
     firebase.auth().onAuthStateChanged(async user => {

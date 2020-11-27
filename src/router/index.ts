@@ -2,6 +2,7 @@ import Vue from "vue";
 import VueRouter, { RouteConfig } from "vue-router";
 import Home from "../modules/site/home/Home.vue";
 import authRoutes from "@/modules/auth/routes";
+import gameRoomsRoutes from "@/modules/game_room/routes";
 
 Vue.use(VueRouter);
 
@@ -10,7 +11,8 @@ const routes: Array<RouteConfig> = [
   {
     path: "/",
     name: "Home",
-    component: Home
+    component: Home,
+    children: gameRoomsRoutes
   }
 ];
 

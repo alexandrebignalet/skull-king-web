@@ -51,6 +51,9 @@
                 </div>
               </div>
             </form>
+            <div>
+              <router-link to="/register">Register</router-link>
+            </div>
           </div>
         </div>
       </div>

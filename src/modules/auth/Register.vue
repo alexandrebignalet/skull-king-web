@@ -72,6 +72,9 @@
                 </div>
               </div>
             </form>
+            <div>
+              <router-link to="/login">Log In</router-link>
+            </div>
           </div>
         </div>
       </div>

@@ -2,7 +2,7 @@ import Vue from "vue";
 import App from "./App.vue";
 import router from "./router";
 import store from "./store";
-
+import "@/axios.auth-interceptor";
 import "@/modules/firebase/firebase.module";
 import { watchCurrentUserAuthState } from "@/modules/auth/auth.module";
 

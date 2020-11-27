@@ -20,7 +20,8 @@ const authStore: Module<any, any> = {
 
   getters: {
     errorOf: (state: any) => (key: ErrorType) => state.errors[key],
-    isAuthenticated: (state: any) => state.user !== null
+    isAuthenticated: (state: any) => state.user !== null,
+    user: (state: any) => state.user
   },
 
   mutations: {
@@ -44,7 +45,11 @@ const authStore: Module<any, any> = {
         .auth()
         .signInWithEmailAndPassword(email, password)
         .then(({ user }: UserCredential) => {
-          commit(UPDATE_USER, { name: user?.displayName, email: user?.email });
+          commit(UPDATE_USER, {
+            name: user?.displayName,
+            email: user?.email,
+            id: user?.uid
+          });
           commit(SET_AUTH_ERROR, { key: ErrorType.LOGIN, message: null });
           return router.push("/");
         })
@@ -60,8 +65,8 @@ const authStore: Module<any, any> = {
       return firebase
         .auth()
         .createUserWithEmailAndPassword(email, password)
-        .then((data: firebase.auth.UserCredential) => {
-          dispatch("updateUserProfile", { user: data.user, email, name });
+        .then(async (data: firebase.auth.UserCredential) => {
+          await dispatch("updateUserProfile", { user: data.user, email, name });
           commit(SET_AUTH_ERROR, { key: ErrorType.REGISTER, message: null });
           return router.push("/");
         })
@@ -81,7 +86,8 @@ const authStore: Module<any, any> = {
         commit(UPDATE_USER, {
           name: user.displayName,
           email: user.email,
-          idToken
+          idToken,
+          id: user.uid
         });
       } else {
         commit(UPDATE_USER, null);
@@ -89,10 +95,10 @@ const authStore: Module<any, any> = {
     },
 
     async updateUserProfile({ commit }, { user, email, name }) {
-      user
+      return user
         ?.updateProfile({ displayName: name })
         .then(() => {
-          commit(UPDATE_USER, { name, email });
+          commit(UPDATE_USER, { name, email, id: user.uid });
           commit(SET_AUTH_ERROR, {
             key: [ErrorType.UPDATE_USER],
             message: null
