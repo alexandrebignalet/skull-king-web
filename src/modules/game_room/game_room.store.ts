@@ -17,7 +17,7 @@ const gameRoomStore: Module<any, any> = {
   actions: {
     createGameRoom: () => {
       return axios
-        .post("http://localhost:8080/skullking/game_rooms")
+        .post(`${process.env.VUE_APP_SERVER_BASE_URL}/game_rooms`)
         .then(response => console.log(response))
         .catch(err => console.error(err));
     },
