@@ -1,83 +1,107 @@
 <template>
-  <div class="container">
-    <div class="row justify-content-center">
-      <div class="col-md-8">
-        <div class="card">
-          <div class="card-header">Login</div>
-          <div class="card-body">
-            <div v-if="error" class="alert alert-danger">{{ error }}</div>
-            <form action="#" @submit.prevent="submit">
-              <div class="form-group row">
-                <label for="email" class="col-md-4 col-form-label text-md-right"
-                  >Email</label
-                >
+  <div>
+    <a-button @click="toggleModal">
+      <a-icon type="login" />
+      Se connecter
+    </a-button>
+    <a-modal v-model="visible" title="Connection" :destroyOnClose="true">
+      <a-row type="flex">
+        <a-col :span="24">
+          <a-form layout="vertical">
+            <a-form-item label="Email">
+              <a-input
+                placeholder="Email"
+                v-model="form.email"
+                type="email"
+                name="email"
+                required
+                autoFocus
+                autocomplete
+              >
+                <a-icon
+                  slot="prefix"
+                  type="mail"
+                  style="color:rgba(0,0,0,.25)"
+                />
+              </a-input>
+            </a-form-item>
 
-                <div class="col-md-6">
-                  <input
-                    id="email"
-                    type="email"
-                    class="form-control"
-                    name="email"
-                    value
-                    required
-                    autofocus
-                    v-model="form.email"
-                  />
-                </div>
-              </div>
+            <a-form-item label="Mot de passe">
+              <a-input-password
+                placeholder="Mot de passe"
+                v-model="form.password"
+                required
+                name="password"
+                value
+                type="password"
+                autocomplete
+                @pressEnter="submit"
+              >
+                <a-icon
+                  slot="prefix"
+                  type="lock"
+                  style="color:rgba(0,0,0,.25)"
+                />
+              </a-input-password>
+            </a-form-item>
+          </a-form>
 
-              <div class="form-group row">
-                <label
-                  for="password"
-                  class="col-md-4 col-form-label text-md-right"
-                  >Password</label
-                >
-
-                <div class="col-md-6">
-                  <input
-                    id="password"
-                    type="password"
-                    class="form-control"
-                    name="password"
-                    required
-                    v-model="form.password"
-                  />
-                </div>
-              </div>
-
-              <div class="form-group row mb-0">
-                <div class="col-md-8 offset-md-4">
-                  <button type="submit" class="btn btn-primary">Login</button>
-                </div>
-              </div>
-            </form>
-            <div>
-              <router-link to="/register">Register</router-link>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
+          <Alert type="error" :alert="error" />
+        </a-col>
+      </a-row>
+      <template slot="footer">
+        <a-button key="back" @click="toggleModal" :disabled="isSigningIn">
+          Annuler
+        </a-button>
+        <a-button
+          key="submit"
+          type="primary"
+          @click="submit"
+          :disabled="isDisabled"
+          :loading="isSigningIn"
+        >
+          Se connecter
+        </a-button>
+      </template>
+    </a-modal>
   </div>
 </template>
-
 <script lang="ts">
 import { Component, Vue } from "vue-property-decorator";
 import { ErrorType } from "@/modules/auth/error-type.enum";
+import Alert from "@/modules/site/alert/Alert.vue";
 
-@Component
+@Component({ components: { Alert } })
 export default class Login extends Vue {
   private form: { email: string; password: string } = {
     email: "",
     password: ""
   };
+  private visible = false;
+  private isSigningIn = false;
 
-  get error() {
+  get error(): string {
     return this.$store.getters["auth/errorOf"](ErrorType.LOGIN);
   }
 
+  get isDisabled(): boolean {
+    return this.form.email === "" || this.form.password === "";
+  }
+
+  toggleModal(): void {
+    this.visible = !this.visible;
+  }
+
   submit() {
-    this.$store.dispatch("auth/login", this.form);
+    this.isSigningIn = true;
+    this.$store
+      .dispatch("auth/login", this.form)
+      .then(() => {
+        this.visible = false;
+      })
+      .finally(() => {
+        this.isSigningIn = false;
+      });
   }
 }
 </script>

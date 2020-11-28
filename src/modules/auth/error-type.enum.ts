@@ -1,5 +1,5 @@
 export enum ErrorType {
-  UPDATE_USER,
-  REGISTER,
-  LOGIN
+  UPDATE_USER = "UPDATE_USER",
+  REGISTER = "REGISTER",
+  LOGIN = "LOGIN"
 }

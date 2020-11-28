@@ -4,6 +4,7 @@ import UserCredential = firebase.auth.UserCredential;
 import router from "../../router";
 import { ErrorType } from "@/modules/auth/error-type.enum";
 
+const CLEAR_USER = "CLEAR_USER";
 const UPDATE_USER = "UPDATE_USER";
 const SET_AUTH_ERROR = "SET_AUTH_ERROR";
 
@@ -25,6 +26,9 @@ const authStore: Module<any, any> = {
   },
 
   mutations: {
+    [CLEAR_USER](state: any) {
+      state.user = null;
+    },
     [UPDATE_USER](state: any, userInfo) {
       state.user = {
         ...state.user,
@@ -32,9 +36,10 @@ const authStore: Module<any, any> = {
       };
     },
     [SET_AUTH_ERROR](state: any, { key, message }) {
+      const update = message ? { message, closeAfter: 5000 } : null;
       state.errors = {
         ...state.errors,
-        [key]: message
+        [key]: update
       };
     }
   },
@@ -51,13 +56,15 @@ const authStore: Module<any, any> = {
             id: user?.uid
           });
           commit(SET_AUTH_ERROR, { key: ErrorType.LOGIN, message: null });
-          return router.push("/");
+          return router.push({ name: "game_rooms" });
         })
         .catch((err: { message: string }) => {
           commit(SET_AUTH_ERROR, {
             key: ErrorType.LOGIN,
             message: err.message
           });
+
+          throw err;
         });
     },
 
@@ -68,13 +75,24 @@ const authStore: Module<any, any> = {
         .then(async (data: firebase.auth.UserCredential) => {
           await dispatch("updateUserProfile", { user: data.user, email, name });
           commit(SET_AUTH_ERROR, { key: ErrorType.REGISTER, message: null });
-          return router.push("/");
+          return router.push({ name: "game_rooms" });
         })
         .catch(err => {
           commit(SET_AUTH_ERROR, {
             key: ErrorType.REGISTER,
             message: err.message
           });
+          throw err;
+        });
+    },
+
+    async logout({ commit }) {
+      return firebase
+        .auth()
+        .signOut()
+        .then(() => {
+          commit(CLEAR_USER);
+          return router.push({ name: "auth" });
         });
     },
 
