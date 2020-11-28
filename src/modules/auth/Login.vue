@@ -1,6 +1,9 @@
 <template>
   <div>
-    <a-button @click="toggleModal">Se connecter</a-button>
+    <a-button @click="toggleModal">
+      <a-icon type="login" />
+      Se connecter
+    </a-button>
     <a-modal v-model="visible" title="Connection" :destroyOnClose="true">
       <a-row type="flex">
         <a-col :span="24">

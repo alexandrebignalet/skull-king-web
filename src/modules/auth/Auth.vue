@@ -1,6 +1,7 @@
 <template>
   <a-row type="flex" justify="center">
-    <div class="auth">
+    <Logout v-if="isAuthenticated" />
+    <div class="auth" v-else>
       <Register />
       <Login />
     </div>
@@ -10,9 +11,14 @@
 import { Component, Vue } from "vue-property-decorator";
 import Login from "@/modules/auth/Login.vue";
 import Register from "@/modules/auth/Register.vue";
+import Logout from "@/modules/auth/Logout.vue";
 
-@Component({ components: { Login, Register } })
-export default class Auth extends Vue {}
+@Component({ components: { Login, Register, Logout } })
+export default class Auth extends Vue {
+  get isAuthenticated() {
+    return this.$store.getters["auth/isAuthenticated"];
+  }
+}
 </script>
 <style lang="scss">
 .auth {
