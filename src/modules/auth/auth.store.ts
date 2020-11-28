@@ -34,7 +34,7 @@ const authStore: Module<any, any> = {
     [SET_AUTH_ERROR](state: any, { key, message }) {
       state.errors = {
         ...state.errors,
-        [key]: message
+        [key]: { message, closeAfter: 5000 }
       };
     }
   },
@@ -51,13 +51,14 @@ const authStore: Module<any, any> = {
             id: user?.uid
           });
           commit(SET_AUTH_ERROR, { key: ErrorType.LOGIN, message: null });
-          return router.push("/");
         })
         .catch((err: { message: string }) => {
           commit(SET_AUTH_ERROR, {
             key: ErrorType.LOGIN,
             message: err.message
           });
+
+          throw err;
         });
     },
 
@@ -68,13 +69,13 @@ const authStore: Module<any, any> = {
         .then(async (data: firebase.auth.UserCredential) => {
           await dispatch("updateUserProfile", { user: data.user, email, name });
           commit(SET_AUTH_ERROR, { key: ErrorType.REGISTER, message: null });
-          return router.push("/");
         })
         .catch(err => {
           commit(SET_AUTH_ERROR, {
             key: ErrorType.REGISTER,
             message: err.message
           });
+          throw err;
         });
     },
 
