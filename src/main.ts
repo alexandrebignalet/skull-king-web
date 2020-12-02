@@ -1,4 +1,3 @@
-import "@/router/component-hooks";
 import Vue from "vue";
 import Antd from "ant-design-vue";
 import "ant-design-vue/dist/antd.css";
@@ -14,10 +13,12 @@ Vue.config.productionTip = false;
 
 Vue.use(Antd);
 
-watchCurrentUserAuthState().then(() => {
-  new Vue({
-    router,
-    store,
-    render: h => h(App)
-  }).$mount("#app");
-});
+watchCurrentUserAuthState()
+  .then(() => {
+    new Vue({
+      router,
+      store,
+      render: h => h(App)
+    }).$mount("#app");
+  })
+  .catch(() => router.push({ name: "auth" }));

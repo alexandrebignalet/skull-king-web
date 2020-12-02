@@ -50,8 +50,9 @@ export default class GameRoom {
     return this.users.length >= 2;
   }
 
-  hasUser(currentUser: GameUser): boolean {
+  hasUser(currentUser?: GameUser): boolean {
     return (
+      currentUser != null &&
       this.users.map(userInRoom => userInRoom.id).indexOf(currentUser.id) !== -1
     );
   }

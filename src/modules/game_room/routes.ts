@@ -4,7 +4,7 @@ import GameRooms from "@/modules/game_room/GameRooms.vue";
 
 const routes: RouteConfig[] = [
   {
-    path: "/game_rooms",
+    path: "/",
     name: "game_rooms",
     component: GameRooms,
     props: () => ({
