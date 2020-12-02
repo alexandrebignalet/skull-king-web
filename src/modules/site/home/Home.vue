@@ -1,8 +1,8 @@
 <template>
   <div class="home">
     <img alt="Vue logo" src="@/assets/skullking.jpeg" />
-
-    <h1 class="heavy-title">SkullKing</h1>
+    <br />
+    <img src="@/assets/skullking-title.png" />
 
     <router-view />
     <Logout v-if="isAuthenticated" />

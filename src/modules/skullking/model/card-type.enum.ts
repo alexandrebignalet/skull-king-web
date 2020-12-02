@@ -1,0 +1,8 @@
+export enum CardType {
+  COLORED = "COLORED",
+  PIRATE = "PIRATE",
+  SKULLKING = "SKULLKING",
+  MERMAID = "MERMAID",
+  SCARY_MARY = "SCARY_MARY",
+  ESCAPE = "SCARY_MARY"
+}

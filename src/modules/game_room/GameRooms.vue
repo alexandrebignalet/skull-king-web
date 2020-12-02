@@ -43,9 +43,7 @@
           <a-popconfirm
             title="Rejoindre ?"
             v-if="room.gameId"
-            @confirm="
-              $router.push({ name: 'game', params: { id: room.gameId } })
-            "
+            @confirm="goToGame(room.gameId)"
             slot="actions"
           >
             <a-badge
@@ -142,6 +140,10 @@ export default class GameRooms extends Vue {
     this.$store.dispatch("gameRoom/startGame", gameRoomId).finally(() => {
       this.isLoading = false;
     });
+  }
+
+  goToGame(gameId: string) {
+    return this.$router.push({ name: "game", params: { id: gameId } });
   }
 
   pickColorForUser(userId: string) {

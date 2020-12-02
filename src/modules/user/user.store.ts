@@ -5,6 +5,7 @@ import router from "../../router";
 import { ErrorType } from "@/modules/auth/error-type.enum";
 import { firebaseAction, firestoreAction } from "vuexfire";
 import db from "@/modules/firebase/firebase.module";
+import GameUser from "@/modules/game_room/game_user";
 
 const gameRoomStore: Module<any, any> = {
   namespaced: true,
@@ -14,7 +15,8 @@ const gameRoomStore: Module<any, any> = {
   },
 
   getters: {
-    currentUser: (state: any) => state.user
+    currentUser: (state: any) =>
+      state.user == null ? null : GameUser.of(state.user)
   },
 
   actions: {

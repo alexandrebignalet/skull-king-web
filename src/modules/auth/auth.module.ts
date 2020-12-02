@@ -13,7 +13,9 @@ export function watchCurrentUserAuthState(): Promise<boolean> {
             await store.dispatch("auth/fetchUser", { user, idToken });
             resolve(isAuthenticated);
           })
-          .catch(err => reject(err));
+          .catch(async err => {
+            reject(err);
+          });
       } else {
         resolve(isAuthenticated);
       }
