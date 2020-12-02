@@ -10,6 +10,8 @@ export default class PlayerRoundScore {
       playerRoundScore.player_id,
       playerRoundScore.round_nb,
       playerRoundScore.score
+        ? Score.of(playerRoundScore.score)
+        : new Score(0, 0, 0)
     );
   }
 

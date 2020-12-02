@@ -1,7 +1,28 @@
 <template>
   <div class="skullking">
     <div class="skullking-top">
-      <div class="skullking-top-left-one"></div>
+      <div class="skullking-top-left-one">
+        <div>
+          <h3 v-if="game.currentPlayerId !== player.id">
+            {{ game.currentPlayerId }}
+          </h3>
+          <h3 v-else>C'est ton tour</h3>
+        </div>
+
+        <div v-if="game.isAnnouncementPhase">
+          <h3>YO OH OH</h3>
+        </div>
+        <div v-if="game.isCardsPhase"></div>
+        <span v-if="game.currentPlayerRoundScore(player.id)">
+          Mon annonce:
+          {{ game.currentPlayerRoundScore(player.id).score.announced }}<br />
+          Faite(s): {{ game.currentPlayerRoundScore(player.id).score.done
+          }}<br />
+          Bonus potentiel:
+          {{ game.currentPlayerRoundScore(player.id).score.potentialBonus
+          }}<br />
+        </span>
+      </div>
       <div class="skullking-top-left-two">
         <div v-if="playerOrderAfterCurrent.length === 2">
           <a-avatar
@@ -63,7 +84,12 @@
         </div>
       </div>
       <div class="skullking-middle-fold-slot">
-        <Announce :roundNb="game.roundNb" />
+        <Announce
+          :roundNb="game.roundNb"
+          v-if="
+            game.isAnnouncementPhase && !game.currentPlayerRoundScore(player.id)
+          "
+        />
         <CardComp
           :card="card"
           :fold="true"
@@ -207,7 +233,6 @@ export default class SkullKing extends Vue {
 
     &-left-one {
       flex-grow: 1;
-      background-color: blue;
     }
     &-left-two {
       flex-grow: 1;

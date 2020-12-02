@@ -5,7 +5,7 @@ export default class Play {
   public card: Card;
 
   static of(play: any): Play {
-    return new Play(play.player_id, play.card);
+    return new Play(play.player_id, Card.of(play.card));
   }
 
   constructor(playerId: string, card: Card) {

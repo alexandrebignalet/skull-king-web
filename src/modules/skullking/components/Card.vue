@@ -21,7 +21,7 @@ export default class SkullKing extends Vue {
 </script>
 <style lang="scss">
 .card {
-  max-width: 150px;
+  max-width: 120px;
 }
 
 #hand {
