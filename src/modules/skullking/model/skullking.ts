@@ -74,4 +74,17 @@ export default class Skullking {
       prs => prs.playerId === playerId && prs.roundNb === this.roundNb
     );
   }
+
+  get mapScore() {
+    return this.scoreBoard.reduce(
+      (acc: { [key: string]: { [key: number]: {} } }, curr) => ({
+        ...acc,
+        [curr.playerId]: {
+          ...acc[curr.playerId],
+          [curr.roundNb]: curr.score
+        }
+      }),
+      {}
+    );
+  }
 }

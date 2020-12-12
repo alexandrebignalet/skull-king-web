@@ -40,29 +40,20 @@
             </a-space>
           </div>
 
-          <a-popconfirm
-            title="Rejoindre ?"
+          <a-badge
             v-if="room.gameId"
-            @confirm="goToGame(room.gameId)"
-            slot="actions"
-          >
-            <a-badge
-              count="Partie en cours"
-              :number-style="{ backgroundColor: '#722ed1' }"
-            />
-          </a-popconfirm>
-          <a-popconfirm
-            title="On lance ?!"
+            @click="goToGame(room.gameId)"
+            count="Partie en cours"
+            :number-style="{ backgroundColor: '#722ed1', cursor: 'pointer' }"
+          />
+          <a-button
+            type="primary"
             v-if="canStartGame(room)"
-            @confirm="startGame(room.id)"
-            okText="Go !!"
-            slot="actions"
+            @click="startGame(room.id)"
           >
-            <a-button type="primary">
-              <a-icon type="rocket" />
-              Lancer
-            </a-button>
-          </a-popconfirm>
+            <a-icon type="rocket" />
+            Lancer
+          </a-button>
 
           <a-button
             type="default"

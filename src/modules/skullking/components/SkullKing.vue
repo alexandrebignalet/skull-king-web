@@ -1,68 +1,47 @@
 <template>
   <div class="skullking">
     <div class="skullking-top">
-      <div class="skullking-top-left-one">
-        <div>
-          <h3 v-if="game.currentPlayerId !== player.id">
-            {{ game.currentPlayerId }}
-          </h3>
-          <h3 v-else>C'est ton tour</h3>
-        </div>
-
-        <div v-if="game.isAnnouncementPhase">
-          <h3>YO OH OH</h3>
-        </div>
-        <div v-if="game.isCardsPhase"></div>
-        <span v-if="game.currentPlayerRoundScore(player.id)">
-          Mon annonce:
-          {{ game.currentPlayerRoundScore(player.id).score.announced }}<br />
-          Faite(s): {{ game.currentPlayerRoundScore(player.id).score.done
-          }}<br />
-          Bonus potentiel:
-          {{ game.currentPlayerRoundScore(player.id).score.potentialBonus
-          }}<br />
-        </span>
-      </div>
+      <div class="skullking-top-left-one"></div>
       <div class="skullking-top-left-two">
         <div v-if="playerOrderAfterCurrent.length === 2">
-          <a-avatar
-            src="https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png"
+          <GamePlayer
+            :user="firstPlayerAfterCurrent"
+            :current-player-id="game.currentPlayerId"
           />
-          <h3>{{ firstPlayerAfterCurrent.name | capitalize }}</h3>
         </div>
         <div v-if="playerOrderAfterCurrent.length === 4">
-          <a-avatar
-            src="https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png"
+          <GamePlayer
+            :user="secondPlayerAfterCurrent"
+            :current-player-id="game.currentPlayerId"
           />
-          <h3>{{ secondPlayerAfterCurrent.name | capitalize }}</h3>
         </div>
       </div>
       <div class="skullking-top-middle">
         <div v-if="playerOrderAfterCurrent.length === 1">
-          <a-avatar
-            src="https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png"
+          <GamePlayer
+            :user="firstPlayerAfterCurrent"
+            :current-player-id="game.currentPlayerId"
           />
-          <h3>{{ firstPlayerAfterCurrent.name | capitalize }}</h3>
         </div>
         <div v-if="playerOrderAfterCurrent.length === 3">
-          <a-avatar
-            src="https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png"
+          <GamePlayer
+            :user="secondPlayerAfterCurrent"
+            :current-player-id="game.currentPlayerId"
           />
-          <h3>{{ secondPlayerAfterCurrent.name | capitalize }}</h3>
         </div>
       </div>
       <div class="skullking-top-right-one">
         <div v-if="playerOrderAfterCurrent.length === 2">
-          <a-avatar
-            src="https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png"
+          <GamePlayer
+            :user="secondPlayerAfterCurrent"
+            :current-player-id="game.currentPlayerId"
           />
-          <h3>{{ secondPlayerAfterCurrent.name | capitalize }}</h3>
         </div>
         <div v-if="playerOrderAfterCurrent.length === 4">
-          <a-avatar
-            src="https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png"
+          <GamePlayer
+            :user="thirdPlayerAfterCurrent"
+            :current-player-id="game.currentPlayerId"
           />
-          <h3>{{ thirdPlayerAfterCurrent.name | capitalize }}</h3>
         </div>
       </div>
       <div class="skullking-top-right-two"></div>
@@ -71,16 +50,16 @@
     <div class="skullking-middle">
       <div class="skullking-middle-left-slot">
         <div v-if="playerOrderAfterCurrent.length === 3">
-          <a-avatar
-            src="https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png"
+          <GamePlayer
+            :user="firstPlayerAfterCurrent"
+            :current-player-id="game.currentPlayerId"
           />
-          <h3>{{ firstPlayerAfterCurrent.name | capitalize }}</h3>
         </div>
         <div v-if="playerOrderAfterCurrent.length === 4">
-          <a-avatar
-            src="https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png"
+          <GamePlayer
+            :user="firstPlayerAfterCurrent"
+            :current-player-id="game.currentPlayerId"
           />
-          <h3>{{ firstPlayerAfterCurrent.name | capitalize }}</h3>
         </div>
       </div>
       <div class="skullking-middle-fold-slot">
@@ -92,23 +71,22 @@
         />
         <CardComp
           :card="card"
-          :fold="true"
           v-for="(card, index) in game.foldCards"
           :key="index"
         />
       </div>
       <div class="skullking-middle-right-slot">
         <div v-if="playerOrderAfterCurrent.length === 3">
-          <a-avatar
-            src="https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png"
+          <GamePlayer
+            :user="thirdPlayerAfterCurrent"
+            :current-player-id="game.currentPlayerId"
           />
-          <h3>{{ thirdPlayerAfterCurrent.name | capitalize }}</h3>
         </div>
         <div v-if="playerOrderAfterCurrent.length === 4">
-          <a-avatar
-            src="https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png"
+          <GamePlayer
+            :user="forthPlayerAfterCurrent"
+            :current-player-id="game.currentPlayerId"
           />
-          <h3>{{ forthPlayerAfterCurrent.name | capitalize }}</h3>
         </div>
       </div>
     </div>
@@ -117,10 +95,10 @@
       <div class="skullking-bottom-current-player">
         <div class="skullking-bottom-current-player-info">
           <div class="skullking-bottom-current-player-base">
-            <a-avatar
-              src="https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png"
+            <GamePlayer
+              :user="currentUser"
+              :current-player-id="game.currentPlayerId"
             />
-            <h3>{{ currentUser.name | capitalize }}</h3>
           </div>
         </div>
         <div class="skullking-bottom-current-player-hand">
@@ -132,15 +110,31 @@
             @click.native="playCard(card)"
           />
         </div>
-        <div class="skullking-bottom-current-player-end"></div>
+        <div class="skullking-bottom-current-player-end">
+          <GameInfo :game="game" :player-id="player.id"></GameInfo>
+        </div>
       </div>
     </div>
+    <!--    <a-modal v-model="game.isEnded" :footer="null" @cancel="goToGameRooms">-->
+    <!--      <table>-->
+    <!--        <thead>-->
+    <!--         <th v-for="(_, playerId) in game.mapScore" :key="playerId"> {{ playerId }}</th>-->
+    <!--        </thead>-->
+    <!--        <tbody>-->
+    <!--          <tr v-for="(prs, index) in game.mapScore" :key="index">{{ prs.score.announced }} | {{ prs.score.done }}</tr>-->
+    <!--        </tbody>-->
+    <!--        <tfoot>-->
+    <!--&lt;!&ndash;          <tr v-for="score in game.scoreBoard" :key="score.playerId">{{ score.total() }}</tr>&ndash;&gt;-->
+    <!--        </tfoot>-->
+    <!--      </table>-->
+    <!--    </a-modal>-->
   </div>
 </template>
 <script lang="ts">
 import { Component, Prop, Vue } from "vue-property-decorator";
 import Player from "@/modules/skullking/model/player";
 import CardComp from "@/modules/skullking/components/Card.vue";
+import GameInfo from "@/modules/skullking/components/GameInfo.vue";
 import Announce from "@/modules/skullking/components/Announce.vue";
 import Skullking from "@/modules/skullking/model/skullking";
 import Card from "@/modules/skullking/model/card";
@@ -148,39 +142,53 @@ import GameUser from "@/modules/game_room/game_user";
 import GameRoom from "@/modules/game_room/game_room";
 import { CardType } from "@/modules/skullking/model/card-type.enum";
 import { ScaryMaryUsage } from "@/modules/skullking/model/scary-mary-usage.enum";
+import GamePlayer from "@/modules/skullking/components/GamePlayer.vue";
+import { capitalize } from "lodash-es";
 
 @Component({
-  components: { CardComp, Announce },
-  filters: {
-    capitalize: function(value: string) {
-      if (!value) return "";
-      value = value.toString();
-      return value.charAt(0).toUpperCase() + value.slice(1);
-    }
-  }
+  components: { GamePlayer, CardComp, Announce, GameInfo },
+  filters: { capitalize }
 })
 export default class SkullKing extends Vue {
   @Prop() private game?: Skullking;
   @Prop() private player?: Player;
   @Prop() private currentUser?: GameUser;
   private playerOrderAfterCurrent = this.resolvePlayersOrderAfterCurrent();
+  private cardIdBeingPlayed: string | null = null;
 
   playCard(card: Card) {
-    const playCard = (usage?: ScaryMaryUsage) =>
-      this.$store.dispatch("skullKing/playCard", {
-        playerId: this.player?.id,
-        card: usage ? { ...card, usage } : card
-      });
+    if (this.isLoading) {
+      return this.$message.warn("Attteeends ça charge !");
+    }
 
-    if (card.type !== CardType.SCARY_MARY) return playCard();
+    if (card.type !== CardType.SCARY_MARY) return this.dispatchPlayCard(card);
 
     this.$confirm({
       content: "Pirate ou Escape ?",
       okText: "Pirate",
-      onOk: () => playCard(ScaryMaryUsage.PIRATE),
+      onOk: () => this.dispatchPlayCard(card, ScaryMaryUsage.PIRATE),
       cancelText: "Escape",
-      onCancel: () => playCard(ScaryMaryUsage.ESCAPE)
+      onCancel: () => this.dispatchPlayCard(card, ScaryMaryUsage.ESCAPE)
     });
+  }
+
+  private dispatchPlayCard(card: Card, usage?: ScaryMaryUsage): Promise<void> {
+    this.cardIdBeingPlayed = card.id;
+    return this.$store
+      .dispatch("skullKing/playCard", {
+        playerId: this.player?.id,
+        card: usage ? { ...card, usage } : card
+      })
+      .catch((errorMessage: string) => {
+        this.$message.error(errorMessage);
+      })
+      .finally(() => {
+        this.cardIdBeingPlayed = null;
+      });
+  }
+
+  get isLoading() {
+    return this.$store.getters["site/isLoading"];
   }
 
   get firstPlayerAfterCurrent(): GameUser | undefined {
@@ -197,6 +205,10 @@ export default class SkullKing extends Vue {
 
   get forthPlayerAfterCurrent(): GameUser | undefined {
     return this.getPlayerAfterCurrent(3);
+  }
+
+  goToGameRooms() {
+    this.$router.push({ name: "game_rooms" });
   }
 
   private resolvePlayersOrderAfterCurrent(): string[] {
@@ -236,7 +248,6 @@ export default class SkullKing extends Vue {
     }
     &-left-two {
       flex-grow: 1;
-      background-color: blue;
     }
     &-middle {
       flex-grow: 2;
@@ -244,11 +255,9 @@ export default class SkullKing extends Vue {
     }
     &-right-one {
       flex-grow: 1;
-      background-color: red;
     }
     &-right-two {
       flex-grow: 1;
-      background-color: red;
     }
   }
 
@@ -258,8 +267,10 @@ export default class SkullKing extends Vue {
     display: flex;
 
     &-left-slot {
-      background-color: red;
       flex-grow: 1;
+      display: flex;
+      justify-content: center;
+      align-items: center;
     }
     &-fold-slot {
       flex-grow: 6;
@@ -268,8 +279,10 @@ export default class SkullKing extends Vue {
       align-items: center;
     }
     &-right-slot {
-      background-color: orange;
       flex-grow: 1;
+      display: flex;
+      justify-content: center;
+      align-items: center;
     }
   }
 
@@ -297,6 +310,9 @@ export default class SkullKing extends Vue {
       }
       &-end {
         flex-grow: 1;
+        display: flex;
+        justify-content: flex-start;
+        align-items: flex-end;
       }
     }
   }

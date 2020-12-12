@@ -1,6 +1,6 @@
 <template>
   <div>
-    <a-card class="card" :id="id" :bordered="false">
+    <a-card class="card" :bordered="false">
       <img slot="cover" :alt="`Carte ${card.type}`" :src="card.path" />
     </a-card>
   </div>
@@ -12,23 +12,22 @@ import Card from "@/modules/skullking/model/card";
 @Component
 export default class SkullKing extends Vue {
   @Prop() private card?: Card;
-  @Prop() private fold?: boolean;
-
-  get id() {
-    return this.fold ? "fold" : "hand";
-  }
 }
 </script>
-<style lang="scss">
+<style lang="scss" media="screen">
 .card {
-  max-width: 120px;
+  max-width: 100px;
+  height: auto;
+}
+@media (max-width: 1000px) {
+  .card {
+    max-width: 75px;
+  }
 }
 
-#hand {
-  bottom: -100px;
-
-  &:hover {
-    bottom: 0;
+@media (max-width: 600px) {
+  .card {
+    max-width: 60px;
   }
 }
 </style>
