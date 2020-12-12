@@ -22,7 +22,15 @@ export default class Announce extends Vue {
   }
 
   announce(count: number) {
+    if (this.isLoading) {
+      return this.$message.warn("Attteeends ça charge !");
+    }
+
     this.$store.dispatch("skullKing/announce", count);
+  }
+
+  get isLoading() {
+    return this.$store.getters["site/isLoading"];
   }
 }
 </script>
