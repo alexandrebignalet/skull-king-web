@@ -15,4 +15,16 @@ export default class Score {
     this.done = done;
     this.potentialBonus = potentialBonus;
   }
+
+  points(roundNb: number): number {
+    if (this.done === this.announced) {
+      return this.announced === 0
+        ? roundNb * 10
+        : this.announced * 20 + this.potentialBonus;
+    } else {
+      return this.announced === 0
+        ? -(roundNb * 10)
+        : -(Math.abs(this.done - this.announced) * 10);
+    }
+  }
 }

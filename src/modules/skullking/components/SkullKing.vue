@@ -5,42 +5,48 @@
       <div class="skullking-top-left-two">
         <div v-if="playerOrderAfterCurrent.length === 2">
           <GamePlayer
+            :game="actualGame"
             :user="firstPlayerAfterCurrent"
-            :current-player-id="game.currentPlayerId"
+            :current-player-id="actualGame.currentPlayerId"
           />
         </div>
         <div v-if="playerOrderAfterCurrent.length === 4">
           <GamePlayer
+            :game="actualGame"
             :user="secondPlayerAfterCurrent"
-            :current-player-id="game.currentPlayerId"
+            :current-player-id="actualGame.currentPlayerId"
           />
         </div>
       </div>
       <div class="skullking-top-middle">
         <div v-if="playerOrderAfterCurrent.length === 1">
           <GamePlayer
+            :game="actualGame"
             :user="firstPlayerAfterCurrent"
-            :current-player-id="game.currentPlayerId"
+            :current-player-id="actualGame.currentPlayerId"
           />
         </div>
         <div v-if="playerOrderAfterCurrent.length === 3">
           <GamePlayer
+            :game="actualGame"
             :user="secondPlayerAfterCurrent"
-            :current-player-id="game.currentPlayerId"
+            :current-player-id="actualGame.currentPlayerId"
           />
         </div>
       </div>
       <div class="skullking-top-right-one">
         <div v-if="playerOrderAfterCurrent.length === 2">
           <GamePlayer
+            :game="actualGame"
             :user="secondPlayerAfterCurrent"
-            :current-player-id="game.currentPlayerId"
+            :current-player-id="actualGame.currentPlayerId"
           />
         </div>
         <div v-if="playerOrderAfterCurrent.length === 4">
           <GamePlayer
+            :game="actualGame"
             :user="thirdPlayerAfterCurrent"
-            :current-player-id="game.currentPlayerId"
+            :current-player-id="actualGame.currentPlayerId"
           />
         </div>
       </div>
@@ -51,41 +57,46 @@
       <div class="skullking-middle-left-slot">
         <div v-if="playerOrderAfterCurrent.length === 3">
           <GamePlayer
+            :game="actualGame"
             :user="firstPlayerAfterCurrent"
-            :current-player-id="game.currentPlayerId"
+            :current-player-id="actualGame.currentPlayerId"
           />
         </div>
         <div v-if="playerOrderAfterCurrent.length === 4">
           <GamePlayer
+            :game="actualGame"
             :user="firstPlayerAfterCurrent"
-            :current-player-id="game.currentPlayerId"
+            :current-player-id="actualGame.currentPlayerId"
           />
         </div>
       </div>
       <div class="skullking-middle-fold-slot">
         <Announce
-          :roundNb="game.roundNb"
+          :roundNb="actualGame.roundNb"
           v-if="
-            game.isAnnouncementPhase && !game.currentPlayerRoundScore(player.id)
+            actualGame.isAnnouncementPhase &&
+              !actualGame.currentPlayerRoundScore(player.id)
           "
         />
         <CardComp
           :card="card"
-          v-for="(card, index) in game.foldCards"
+          v-for="(card, index) in foldCards"
           :key="index"
         />
       </div>
       <div class="skullking-middle-right-slot">
         <div v-if="playerOrderAfterCurrent.length === 3">
           <GamePlayer
+            :game="actualGame"
             :user="thirdPlayerAfterCurrent"
-            :current-player-id="game.currentPlayerId"
+            :current-player-id="actualGame.currentPlayerId"
           />
         </div>
         <div v-if="playerOrderAfterCurrent.length === 4">
           <GamePlayer
+            :game="actualGame"
             :user="forthPlayerAfterCurrent"
-            :current-player-id="game.currentPlayerId"
+            :current-player-id="actualGame.currentPlayerId"
           />
         </div>
       </div>
@@ -96,8 +107,9 @@
         <div class="skullking-bottom-current-player-info">
           <div class="skullking-bottom-current-player-base">
             <GamePlayer
+              :game="actualGame"
               :user="currentUser"
-              :current-player-id="game.currentPlayerId"
+              :current-player-id="actualGame.currentPlayerId"
             />
           </div>
         </div>
@@ -105,37 +117,34 @@
           <CardComp
             class="skullking-bottom-current-player-hand-card"
             :card="card"
-            v-for="(card, index) in player.cards"
+            v-for="(card, index) in actualPlayer.cards"
             :key="index"
             @click.native="playCard(card)"
           />
         </div>
         <div class="skullking-bottom-current-player-end">
-          <GameInfo :game="game" :player-id="player.id"></GameInfo>
+          <a-button type="default" @click="toggleScore" shape="round"
+            >Scores</a-button
+          >
         </div>
       </div>
     </div>
-    <!--    <a-modal v-model="game.isEnded" :footer="null" @cancel="goToGameRooms">-->
-    <!--      <table>-->
-    <!--        <thead>-->
-    <!--         <th v-for="(_, playerId) in game.mapScore" :key="playerId"> {{ playerId }}</th>-->
-    <!--        </thead>-->
-    <!--        <tbody>-->
-    <!--          <tr v-for="(prs, index) in game.mapScore" :key="index">{{ prs.score.announced }} | {{ prs.score.done }}</tr>-->
-    <!--        </tbody>-->
-    <!--        <tfoot>-->
-    <!--&lt;!&ndash;          <tr v-for="score in game.scoreBoard" :key="score.playerId">{{ score.total() }}</tr>&ndash;&gt;-->
-    <!--        </tfoot>-->
-    <!--      </table>-->
-    <!--    </a-modal>-->
+    <ScorePanel
+      :score-table="game.scoreTable"
+      :visible="showScoreDrawer"
+      :player-names="playerNames"
+      :closable="!game.isEnded"
+      @close="toggleScore"
+    />
   </div>
 </template>
 <script lang="ts">
-import { Component, Prop, Vue } from "vue-property-decorator";
+import { Component, Prop, Vue, Watch } from "vue-property-decorator";
 import Player from "@/modules/skullking/model/player";
 import CardComp from "@/modules/skullking/components/Card.vue";
-import GameInfo from "@/modules/skullking/components/GameInfo.vue";
 import Announce from "@/modules/skullking/components/Announce.vue";
+import Score from "@/modules/skullking/components/Score.vue";
+import ScorePanel from "@/modules/skullking/components/ScorePanel.vue";
 import Skullking from "@/modules/skullking/model/skullking";
 import Card from "@/modules/skullking/model/card";
 import GameUser from "@/modules/game_room/game_user";
@@ -146,15 +155,57 @@ import GamePlayer from "@/modules/skullking/components/GamePlayer.vue";
 import { capitalize } from "lodash-es";
 
 @Component({
-  components: { GamePlayer, CardComp, Announce, GameInfo },
+  components: { GamePlayer, CardComp, Announce, Score, ScorePanel },
   filters: { capitalize }
 })
 export default class SkullKing extends Vue {
   @Prop() private game?: Skullking;
   @Prop() private player?: Player;
   @Prop() private currentUser?: GameUser;
+
   private playerOrderAfterCurrent = this.resolvePlayersOrderAfterCurrent();
   private cardIdBeingPlayed: string | null = null;
+  private actualGame?: Skullking = this.game;
+  private actualPlayer?: Player = this.player;
+  private playerNames: { [key: string]: string } | undefined = this
+    .currentGameRoom?.userNamesPerId;
+  private showScore = false;
+
+  get showScoreDrawer(): boolean {
+    return this.showScore || (this.game ? this.game.isEnded : false);
+  }
+
+  toggleScore() {
+    console.log(this.showScore);
+    this.showScore = !this.showScore;
+  }
+
+  get foldCards() {
+    return this.actualGame?.fold?.map(p => p.card);
+  }
+
+  @Watch("game", { deep: true })
+  onFoldUpdate(gameUpdate: Skullking, actualGame: Skullking) {
+    const update = () => {
+      this.actualGame = gameUpdate;
+    };
+
+    if (gameUpdate.isFoldEnded(actualGame)) setTimeout(() => update(), 1000);
+    else if (gameUpdate.isNextRound(actualGame))
+      setTimeout(() => update(), 2500);
+    else update();
+  }
+
+  @Watch("player")
+  onPlayerUpdate(playerUpdate: Player, actualPlayer: Player) {
+    const update = () => {
+      this.actualPlayer = playerUpdate;
+    };
+
+    if (playerUpdate.cards.length > 0 && actualPlayer.cards.length === 0) {
+      setTimeout(() => update(), 1000);
+    } else update();
+  }
 
   playCard(card: Card) {
     if (this.isLoading) {
@@ -207,10 +258,6 @@ export default class SkullKing extends Vue {
     return this.getPlayerAfterCurrent(3);
   }
 
-  goToGameRooms() {
-    this.$router.push({ name: "game_rooms" });
-  }
-
   private resolvePlayersOrderAfterCurrent(): string[] {
     const players = this.game?.players;
     const currentUserId = this.currentUser?.id;
@@ -258,6 +305,7 @@ export default class SkullKing extends Vue {
     }
     &-right-two {
       flex-grow: 1;
+      padding-top: 20px;
     }
   }
 
@@ -302,7 +350,7 @@ export default class SkullKing extends Vue {
       &-hand {
         display: flex;
         justify-content: center;
-        flex-grow: 4;
+        flex-grow: 6;
 
         &-card {
           cursor: pointer;
@@ -313,6 +361,7 @@ export default class SkullKing extends Vue {
         display: flex;
         justify-content: flex-start;
         align-items: flex-end;
+        padding-bottom: 30px;
       }
     }
   }

@@ -64,4 +64,13 @@ export default class GameRoom {
   get userCreator() {
     return this.users.find(u => u.id === this.creator);
   }
+
+  get userNamesPerId() {
+    return this.users.reduce((acc: { [key: string]: string }, user) => {
+      return {
+        ...acc,
+        [user.id]: user.name
+      };
+    }, {});
+  }
 }

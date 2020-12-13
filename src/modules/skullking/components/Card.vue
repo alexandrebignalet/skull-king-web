@@ -12,6 +12,7 @@ import Card from "@/modules/skullking/model/card";
 @Component
 export default class SkullKing extends Vue {
   @Prop() private card?: Card;
+  @Prop() private allowed?: boolean = false;
 }
 </script>
 <style lang="scss" media="screen">
@@ -19,7 +20,12 @@ export default class SkullKing extends Vue {
   max-width: 100px;
   height: auto;
 }
-@media (max-width: 1000px) {
+
+.not-allowed {
+  max-width: 100px;
+  background-color: black;
+}
+@media (max-width: 700px) {
   .card {
     max-width: 75px;
   }
