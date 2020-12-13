@@ -1,7 +1,6 @@
 import Play from "@/modules/skullking/model/play";
-import Card from "@/modules/skullking/model/card";
 import PlayerRoundScore from "@/modules/skullking/model/player-round-score";
-import { debounce } from "lodash-es";
+import Score from "@/modules/skullking/model/score";
 
 enum SkullkingPhase {
   ANNOUNCEMENT = "ANNOUNCEMENT",
@@ -69,22 +68,48 @@ export default class Skullking {
     return this.fold?.map(p => p.card);
   }
 
+  public isNextRound(other: Skullking): boolean {
+    return (
+      this.phase === SkullkingPhase.ANNOUNCEMENT &&
+      other.phase === SkullkingPhase.CARDS
+    );
+  }
+
+  public isFoldEnded(other: Skullking): boolean {
+    return (
+      this.fold?.length === 0 && other.fold?.length === other?.players.length
+    );
+  }
+
   currentPlayerRoundScore(playerId: string): PlayerRoundScore | undefined {
     return this.scoreBoard.find(
       prs => prs.playerId === playerId && prs.roundNb === this.roundNb
     );
   }
 
-  get mapScore() {
-    return this.scoreBoard.reduce(
-      (acc: { [key: string]: { [key: number]: {} } }, curr) => ({
-        ...acc,
-        [curr.playerId]: {
-          ...acc[curr.playerId],
-          [curr.roundNb]: curr.score
-        }
-      }),
+  get scoreTable(): {
+    columns: string[];
+    rows: { [key: number]: Score[] };
+    totals: any[];
+  } {
+    const columns = ["", ...this.players];
+    const rows = this.scoreBoard.reduce(
+      (acc: { [key: number]: Score[] }, scorePerRound) => {
+        return {
+          ...acc,
+          [scorePerRound.roundNb]: acc[scorePerRound.roundNb]
+            ? acc[scorePerRound.roundNb].concat(scorePerRound.score)
+            : [scorePerRound.score]
+        };
+      },
       {}
     );
+    const totals = this.players.map(playerId => {
+      const scoresForPlayer = this.scoreBoard
+        .filter(prs => prs.playerId === playerId)
+        .map(prs => prs.points);
+      return scoresForPlayer.reduce((sum: number, points) => sum + points, 0);
+    });
+    return { columns, rows, totals: ["", ...totals] };
   }
 }

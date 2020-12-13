@@ -1,26 +1,36 @@
 <template>
   <div class="game-player">
-    <div
-      class="avatar-wrapper"
-      :class="{ active: user.id === currentPlayerId }"
-    >
+    <div class="avatar-wrapper" :class="{ active: userId === currentPlayerId }">
       <a-avatar
         src="https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png"
       />
     </div>
-    <h3>{{ user.name | capitalize }}</h3>
+    <h3>{{ userName | capitalize }}</h3>
+    <GameInfo :game="game" :player-id="userId" />
   </div>
 </template>
 <script lang="ts">
 import { Component, Prop, Vue } from "vue-property-decorator";
 import { capitalize } from "lodash-es";
+import GameInfo from "@/modules/skullking/components/GameInfo.vue";
+import Skullking from "@/modules/skullking/model/skullking";
 
 @Component({
+  components: { GameInfo },
   filters: { capitalize }
 })
 export default class GamePlayer extends Vue {
+  @Prop() game?: Skullking;
   @Prop() user?: { id: string; name: string };
   @Prop() currentPlayerId?: string;
+
+  get userId(): string | undefined {
+    return this.user?.id;
+  }
+
+  get userName(): string | undefined {
+    return this.user?.name;
+  }
 }
 </script>
 <style lang="scss" media="all">

@@ -20,4 +20,8 @@ export default class PlayerRoundScore {
     this.roundNb = roundNb;
     this.score = score;
   }
+
+  get points(): number {
+    return this.score.points(this.roundNb);
+  }
 }
