@@ -7,7 +7,7 @@ const routes: RouteConfig[] = [
     path: "/game/:id",
     name: "game",
     component: SkullKing,
-    props: to => ({
+    props: () => ({
       game: store.getters["skullKing/game"],
       player: store.getters["player/currentPlayer"],
       currentUser: store.getters["user/currentUser"]

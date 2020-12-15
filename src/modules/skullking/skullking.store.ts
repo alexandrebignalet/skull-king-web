@@ -8,6 +8,15 @@ import SkullKingRepository from "@/modules/skullking/skullking.repository";
 
 const repository = new SkullKingRepository(axios);
 
+const avatarTypes = [
+  "mermaid",
+  "skull",
+  "barbossa",
+  "calypso",
+  "davy-jones",
+  "jack-sparrow"
+];
+
 const GAME_REF = "game";
 const skullKingStore: Module<any, any> = {
   namespaced: true,
@@ -17,7 +26,17 @@ const skullKingStore: Module<any, any> = {
   },
 
   getters: {
-    game: (state: any) => (state.game ? SkullKing.of(state.game) : null)
+    game: (state: any) => (state.game ? SkullKing.of(state.game) : null),
+    avatarFor: (state, getters) => (playerId: string) => {
+      const game: SkullKing | null = getters.game;
+      if (!game) return "";
+      return avatarTypes[game.players.indexOf(playerId)];
+    },
+    isLeader: (state, getters) => (playerId: string) => {
+      const game: SkullKing | null = getters.game;
+      if (!game) return false;
+      return game.leaders.includes(playerId);
+    }
   },
 
   actions: {

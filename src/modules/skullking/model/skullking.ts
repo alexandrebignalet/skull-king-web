@@ -18,8 +18,8 @@ export default class Skullking {
   public readonly scoreBoard: PlayerRoundScore[];
 
   static of(game: any): Skullking {
-    const fold = game.fold ? game.fold : [];
-    const scoreBoard = game.score_board ? game.score_board : [];
+    const fold = game.fold ? Object.values(game.fold) : [];
+    const scoreBoard = game.score_board ? Object.values(game.score_board) : [];
     const phase =
       game.phase == SkullkingPhase.ANNOUNCEMENT
         ? SkullkingPhase.ANNOUNCEMENT
@@ -87,29 +87,44 @@ export default class Skullking {
     );
   }
 
-  get scoreTable(): {
-    columns: string[];
-    rows: { [key: number]: Score[] };
-    totals: any[];
-  } {
-    const columns = ["", ...this.players];
-    const rows = this.scoreBoard.reduce(
-      (acc: { [key: number]: Score[] }, scorePerRound) => {
-        return {
+  totalScoreFor(playerId: string): number {
+    return this.scoreBoard
+      .filter(prs => prs.playerId === playerId)
+      .reduce((acc, curr) => acc + curr.points, 0);
+  }
+
+  get currentRoundScorePerPlayer(): { [key: string]: Score } {
+    return this.scoreBoard
+      .filter(prs => prs.roundNb === this.roundNb)
+      .reduce(
+        (acc: { [key: string]: Score }, curr: PlayerRoundScore) => ({
           ...acc,
-          [scorePerRound.roundNb]: acc[scorePerRound.roundNb]
-            ? acc[scorePerRound.roundNb].concat(scorePerRound.score)
-            : [scorePerRound.score]
-        };
-      },
-      {}
+          [curr.playerId]: curr.score
+        }),
+        {}
+      );
+  }
+
+  get leaders(): string[] {
+    const playerPerPoints = this.players
+      .map((playerId: string) => ({
+        playerId,
+        total: this.totalScoreFor(playerId)
+      }))
+      .reduce(
+        (acc: any, curr: any) => ({
+          ...acc,
+          [curr?.total]: acc[curr?.total]
+            ? acc[curr?.total].concat(curr.playerId)
+            : [curr.playerId]
+        }),
+        {}
+      );
+
+    const maxPoints = Object.keys(playerPerPoints).reduce(
+      (acc, curr) => (+curr > acc ? +curr : acc),
+      0
     );
-    const totals = this.players.map(playerId => {
-      const scoresForPlayer = this.scoreBoard
-        .filter(prs => prs.playerId === playerId)
-        .map(prs => prs.points);
-      return scoresForPlayer.reduce((sum: number, points) => sum + points, 0);
-    });
-    return { columns, rows, totals: ["", ...totals] };
+    return playerPerPoints[maxPoints];
   }
 }

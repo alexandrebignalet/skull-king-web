@@ -4,6 +4,8 @@ import db from "@/modules/firebase/firebase.module";
 import axios from "axios";
 import GameRoom from "@/modules/game_room/game_room";
 
+const ROOM_REDIRECTION_KEY = "room_id_redirection";
+
 const gameRoomStore: Module<any, any> = {
   namespaced: true,
 
@@ -12,26 +14,28 @@ const gameRoomStore: Module<any, any> = {
   },
 
   getters: {
-    gameRooms: (state: any, getters, rootState, rootGetters) =>
+    gameRooms: (state: any) =>
       state.list
         .map((it: any) => GameRoom.of(it))
         .sort(
           (roomA: GameRoom, roomB: GameRoom) =>
             roomB.creationDate - roomA.creationDate
-        )
-        .sort((roomA: GameRoom, roomB: GameRoom) => {
-          const currentUser = rootGetters["user/currentUser"];
-
-          const userInA = roomA.hasUser(currentUser);
-          const userInB = roomB.hasUser(currentUser);
-
-          if (userInA && userInB) return 0;
-          if (userInA) return -1;
-          else return 1;
-        })
+        ),
+    gameRoom: (state: any, getters) => (roomId: string) =>
+      getters.gameRooms.find((r: GameRoom) => r.id === roomId)
   },
 
   actions: {
+    async retrieveRedirection() {
+      const roomId = localStorage.getItem(ROOM_REDIRECTION_KEY);
+      localStorage.removeItem(ROOM_REDIRECTION_KEY);
+      return roomId;
+    },
+
+    async redirectToGameRoom(_, roomId) {
+      localStorage.setItem(ROOM_REDIRECTION_KEY, roomId);
+    },
+
     async createGameRoom() {
       return axios
         .post(`${process.env.VUE_APP_SERVER_BASE_URL}/game_rooms`)
@@ -64,7 +68,7 @@ const gameRoomStore: Module<any, any> = {
 
     bindGameRooms: firebaseAction(({ bindFirebaseRef, rootGetters }) => {
       const currentUserId = rootGetters["auth/user"].id;
-      return bindFirebaseRef("list", db.ref(`game_rooms`));
+      return bindFirebaseRef("list", db.ref(`users/${currentUserId}/rooms`));
     })
   }
 };

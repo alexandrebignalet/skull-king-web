@@ -1,18 +1,13 @@
 <template>
-  <div class="home">
-    <img alt="Vue logo" src="@/assets/skullking.jpeg" />
-    <br />
-    <img src="@/assets/skullking-title.png" />
-
+  <div class="container">
+    <div class="sidebar"></div>
     <router-view />
-    <Logout v-if="isAuthenticated" />
   </div>
 </template>
 <script lang="ts">
 import { Component, Vue } from "vue-property-decorator";
-import Logout from "@/modules/auth/Logout.vue";
 
-@Component({ components: { Logout } })
+@Component
 export default class Home extends Vue {
   get isAuthenticated() {
     return this.$store.getters["auth/isAuthenticated"];
@@ -21,10 +16,23 @@ export default class Home extends Vue {
 </script>
 <style lang="scss">
 .container {
-  padding: 0 600px 0 600px;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
+  position: relative;
+  .logo {
+    z-index: 1;
+    margin-left: 20%;
+    margin-top: 75px;
+    max-width: 336px;
+  }
+
+  .sidebar {
+    position: absolute;
+    left: 0;
+    width: 20%;
+    height: 100%;
+    border-top-left-radius: 45px;
+    border-bottom-left-radius: 45px;
+    background: linear-gradient(#40487d, #1f2341);
+  }
 }
 .heavy-title {
   padding: 30px 0 20px;

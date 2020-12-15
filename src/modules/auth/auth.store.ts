@@ -1,28 +1,21 @@
 import firebase from "firebase";
 import { Module } from "vuex";
-import UserCredential = firebase.auth.UserCredential;
 import router from "../../router";
-import { ErrorType } from "@/modules/auth/error-type.enum";
+import GameUser from "@/modules/game_room/game_user";
 
 const CLEAR_USER = "CLEAR_USER";
 const UPDATE_USER = "UPDATE_USER";
-const SET_AUTH_ERROR = "SET_AUTH_ERROR";
 
 const authStore: Module<any, any> = {
   namespaced: true,
 
   state: {
-    user: null,
-    errors: Object.keys(ErrorType).reduce(
-      (acc, type) => ({ ...acc, [type]: null }),
-      {}
-    )
+    user: null
   },
 
   getters: {
-    errorOf: (state: any) => (key: ErrorType) => state.errors[key],
     isAuthenticated: (state: any) => state.user !== null,
-    user: (state: any) => state.user
+    user: (state: any) => (state.user ? GameUser.of(state.user) : null)
   },
 
   mutations: {
@@ -34,65 +27,24 @@ const authStore: Module<any, any> = {
         ...state.user,
         ...userInfo
       };
-    },
-    [SET_AUTH_ERROR](state: any, { key, message }) {
-      const update = message ? { message, closeAfter: 5000 } : null;
-      state.errors = {
-        ...state.errors,
-        [key]: update
-      };
     }
   },
 
   actions: {
-    async login({ commit }, { email, password }) {
+    signInAnonymously: async ({ dispatch }, { pseudo, avatarURL }) => {
       return firebase
         .auth()
-        .signInWithEmailAndPassword(email, password)
-        .then(({ user }: UserCredential) => {
-          commit(UPDATE_USER, {
-            name: user?.displayName,
-            email: user?.email,
-            id: user?.uid
-          });
-          commit(SET_AUTH_ERROR, { key: ErrorType.LOGIN, message: null });
-          return router.push({ name: "game_rooms" });
-        })
-        .catch((err: { message: string }) => {
-          commit(SET_AUTH_ERROR, {
-            key: ErrorType.LOGIN,
-            message: err.message
-          });
-
-          throw err;
-        });
-    },
-
-    async register({ commit, dispatch }, { email, name, password }) {
-      return firebase
-        .auth()
-        .createUserWithEmailAndPassword(email, password)
+        .signInAnonymously()
         .then(async (data: firebase.auth.UserCredential) => {
-          await dispatch("updateUserProfile", { user: data.user, email, name });
-          commit(SET_AUTH_ERROR, { key: ErrorType.REGISTER, message: null });
+          await dispatch("updateUserProfile", {
+            user: data.user,
+            pseudo,
+            avatarURL
+          });
           return router.push({ name: "game_rooms" });
         })
-        .catch(err => {
-          commit(SET_AUTH_ERROR, {
-            key: ErrorType.REGISTER,
-            message: err.message
-          });
-          throw err;
-        });
-    },
-
-    async logout({ commit }) {
-      return firebase
-        .auth()
-        .signOut()
-        .then(() => {
-          commit(CLEAR_USER);
-          return router.push({ name: "auth" });
+        .catch(error => {
+          throw error;
         });
     },
 
@@ -102,8 +54,8 @@ const authStore: Module<any, any> = {
     ) {
       if (user) {
         commit(UPDATE_USER, {
-          name: user.displayName,
-          email: user.email,
+          pseudo: user.displayName,
+          avatarURL: user.photoURL,
           idToken,
           id: user.uid
         });
@@ -112,21 +64,14 @@ const authStore: Module<any, any> = {
       }
     },
 
-    async updateUserProfile({ commit }, { user, email, name }) {
+    async updateUserProfile({ commit }, { user, pseudo, avatarURL }) {
       return user
-        ?.updateProfile({ displayName: name })
+        ?.updateProfile({ displayName: pseudo, photoURL: avatarURL })
         .then(() => {
-          commit(UPDATE_USER, { name, email, id: user.uid });
-          commit(SET_AUTH_ERROR, {
-            key: [ErrorType.UPDATE_USER],
-            message: null
-          });
+          commit(UPDATE_USER, { pseudo, avatarURL, id: user.uid });
         })
         .catch((err: { message: string }) => {
-          commit(SET_AUTH_ERROR, {
-            key: [ErrorType.UPDATE_USER],
-            message: err.message
-          });
+          throw err;
         });
     }
   }

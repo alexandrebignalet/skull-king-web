@@ -2,7 +2,8 @@ import GameRoom from "@/modules/game_room/game_room";
 
 export default class GameUser {
   public id: string;
-  public name: string;
+  public pseudo: string;
+  public avatarURL: string;
   public rooms: GameRoom[];
 
   static of(rawUser: any): GameUser {
@@ -10,13 +11,20 @@ export default class GameUser {
     return new GameUser(
       rawUser.id,
       rawUser.name,
+      rawUser.photoURL,
       rawRooms.map((raw: any) => GameRoom.of(raw))
     );
   }
 
-  constructor(id: string, name: string, rooms: GameRoom[]) {
+  constructor(
+    id: string,
+    pseudo: string,
+    avatarURL: string,
+    rooms: GameRoom[]
+  ) {
     this.id = id;
-    this.name = name;
+    this.pseudo = pseudo;
+    this.avatarURL = avatarURL;
     this.rooms = rooms;
   }
 }

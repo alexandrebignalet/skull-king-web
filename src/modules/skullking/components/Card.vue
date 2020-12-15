@@ -1,8 +1,11 @@
 <template>
-  <div>
-    <a-card class="card" :bordered="false">
-      <img slot="cover" :alt="`Carte ${card.type}`" :src="card.path" />
-    </a-card>
+  <div class="card">
+    <img
+      slot="cover"
+      class="card-image"
+      :alt="`Carte ${card.type}`"
+      :src="card.path"
+    />
   </div>
 </template>
 <script lang="ts">
@@ -12,28 +15,38 @@ import Card from "@/modules/skullking/model/card";
 @Component
 export default class SkullKing extends Vue {
   @Prop() private card?: Card;
-  @Prop() private allowed?: boolean = false;
 }
 </script>
 <style lang="scss" media="screen">
 .card {
   max-width: 100px;
-  height: auto;
+  height: 65px;
+  margin-right: -25px;
+  overflow: hidden;
+
+  &-image {
+    border-radius: 20px;
+    width: 100px;
+  }
 }
 
-.not-allowed {
-  max-width: 100px;
-  background-color: black;
-}
 @media (max-width: 700px) {
   .card {
-    max-width: 75px;
+    &-image {
+      border-radius: 10px;
+      max-height: 100px;
+      width: auto;
+    }
   }
 }
 
 @media (max-width: 600px) {
   .card {
-    max-width: 60px;
+    &-image {
+      border-radius: 10px;
+      max-height: 100px;
+      width: auto;
+    }
   }
 }
 </style>

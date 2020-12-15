@@ -1,91 +1,43 @@
 <template>
-  <div>
-    <a-card title="Mes salons">
-      <a-button
-        type="default"
-        @click="createGameRoom"
-        slot="extra"
-        :loading="isLoading"
+  <div class="main-container">
+    <img src="@/assets/skullking-title.png" alt="logo" class="logo" />
+
+    <div class="title">Lobby</div>
+    <div class="list-container">
+      <div
+        class="list-item-container"
+        @click="goToGameRoom(room.id)"
+        v-for="room in gameRooms"
+        :key="room.id"
       >
-        <a-icon type="plus" />
-        Nouveau salon
-      </a-button>
-      <a-list item-layout="horizontal" :data-source="gameRooms">
-        <a-list-item slot="renderItem" slot-scope="room" class="game-room-item">
-          <a-list-item-meta>
-            <a-badge
-              slot="avatar"
-              :count="room.users.length"
-              :number-style="resolveBadgeColor(room)"
-              show-zero
-            >
-              <a-avatar
-                src="https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png"
-              />
-            </a-badge>
-
-            <div slot="title">
-              Salon créé le <b>{{ room.createdAt }}</b> par
-              <b>{{ room.userCreator.name }}</b>
-            </div>
-          </a-list-item-meta>
-          <div>
-            <a-space>
-              <a-badge
-                v-for="user in room.users"
-                :key="user.id"
-                :number-style="pickColorForUser(user.id)"
-                :count="user.name"
-              />
-            </a-space>
+        <Avatar type="mermaid" class="avatar" />
+        <div class="middle-content">
+          <div class="room-state">
+            <div v-if="room.gameId">Partie en cours</div>
+            <div v-else>En cours de création</div>
           </div>
-
-          <a-badge
-            v-if="room.gameId"
-            @click="goToGame(room.gameId)"
-            count="Partie en cours"
-            :number-style="{ backgroundColor: '#722ed1', cursor: 'pointer' }"
+          <div class="sub-title">Créé le {{ room.createdAt }}</div>
+        </div>
+        <div class="right-content">
+          {{ room.users.length }}
+          <img
+            src="@/assets/icn_crown_32.png"
+            alt="leader"
+            v-if="room.isFull"
           />
-          <a-button
-            type="primary"
-            v-if="canStartGame(room)"
-            @click="startGame(room.id)"
-          >
-            <a-icon type="rocket" />
-            Lancer
-          </a-button>
-
-          <a-button
-            type="default"
-            slot="actions"
-            @click="joinGameRoom(room.id)"
-            v-if="!room.hasUser(currentUser) && !room.isFull && !room.gameId"
-          >
-            <a-icon type="login" />
-            Rejoindre
-          </a-button>
-
-          <div slot="actions" v-if="room.isFull">Salon plein</div>
-
-          <a
-            v-if="room.hasUser(currentUser) && !room.gameId"
-            @click="leaveGameRoom(room.id)"
-            slot="actions"
-          >
-            <a-icon type="logout" />
-            Quitter
-          </a>
-        </a-list-item>
-      </a-list>
-    </a-card>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 <script lang="ts">
 import { Component, Prop, Vue } from "vue-property-decorator";
 import GameRoom from "@/modules/game_room/game_room";
 import GameUser from "@/modules/game_room/game_user";
+import Avatar from "@/modules/skullking/components/Avatar.vue";
+import { capitalize } from "lodash-es";
 
-@Component
+@Component({ components: { Avatar }, filters: { capitalize } })
 export default class GameRooms extends Vue {
   @Prop() private gameRooms?: GameRoom[];
   @Prop() private currentUser?: GameUser;
@@ -137,25 +89,36 @@ export default class GameRooms extends Vue {
     return this.$router.push({ name: "game", params: { id: gameId } });
   }
 
-  pickColorForUser(userId: string) {
-    if (userId == this.currentUser?.id) return { backgroundColor: "#1890ff" };
-    return {
-      backgroundColor: "#fff",
-      color: "#999",
-      boxShadow: "0 0 0 1px #d9d9d9 inset"
-    };
-  }
-
-  resolveBadgeColor({ users }: GameRoom): { backgroundColor: string } {
-    let color;
-    if (users.length < 4) color = "#52c41a";
-    else if (users.length < 5) color = "#fa8c16";
-    else color = "#f5222d";
-    return { backgroundColor: color };
+  goToGameRoom(roomId: string) {
+    return this.$router.push({ name: "game_room", params: { id: roomId } });
   }
 }
 </script>
 <style lang="scss">
+.main-container {
+  margin-top: 0;
+  .list-container {
+    .list-item-container {
+      cursor: pointer;
+
+      &:hover {
+        box-shadow: unset;
+      }
+
+      .middle-content {
+        text-transform: none;
+        .room-state {
+        }
+
+        .sub-title {
+          font-size: 12px;
+          font-weight: normal;
+          color: #d9dbec;
+        }
+      }
+    }
+  }
+}
 .game-rooms-wrapper {
   display: flex;
   flex-direction: column;

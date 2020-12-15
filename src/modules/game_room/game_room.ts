@@ -35,7 +35,7 @@ export default class GameRoom {
   }
 
   get retrieveCreator() {
-    return this.users.find(user => user.id === this.creator)?.name;
+    return this.users.find(user => user.id === this.creator)?.pseudo;
   }
 
   get createdAt() {
@@ -69,7 +69,7 @@ export default class GameRoom {
     return this.users.reduce((acc: { [key: string]: string }, user) => {
       return {
         ...acc,
-        [user.id]: user.name
+        [user.id]: user.pseudo
       };
     }, {});
   }
