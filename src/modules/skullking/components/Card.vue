@@ -12,7 +12,6 @@ import Card from "@/modules/skullking/model/card";
 @Component
 export default class SkullKing extends Vue {
   @Prop() private card?: Card;
-  @Prop() private allowed?: boolean = false;
 }
 </script>
 <style lang="scss" media="screen">

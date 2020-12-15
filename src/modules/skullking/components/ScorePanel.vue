@@ -3,44 +3,45 @@
     <a-drawer
       title="Tableau des scores"
       :visible="visible"
-      :width="300"
       :closable="closable"
       @close="onClose"
     >
-      <table>
-        <thead class="ant-table-thead">
-          <th
-            class="ant-table-header-column"
-            v-for="playerId in scoreTable.columns"
-            :key="playerId"
-          >
-            <div class="ant-table-column-title">
-              {{ userNameFrom(playerId) | capitalize }}
-            </div>
-          </th>
-        </thead>
-        <tbody class="ant-table-tbody">
-          <tr
-            class="ant-table-row ant-table-row-level-0"
-            v-for="(scores, roundNb) in scoreTable.rows"
-            :key="roundNb"
-          >
-            <th>{{ roundNb }}</th>
-            <td v-for="(score, index) in scores" :key="index">
-              <Score :score="score" />
-            </td>
-          </tr>
-          <tr class="ant-table-row ant-table-row-level-0">
+      <div>
+        <table>
+          <thead class="ant-table-thead">
             <th
-              v-for="(total, index) in scoreTable.totals"
-              :key="index"
-              class="total"
+              class="ant-table-header-column"
+              v-for="playerId in scoreTable.columns"
+              :key="playerId"
             >
-              <h2>{{ total }}</h2>
+              <div class="ant-table-column-title">
+                {{ userNameFrom(playerId) | capitalize }}
+              </div>
             </th>
-          </tr>
-        </tbody>
-      </table>
+          </thead>
+          <tbody class="ant-table-tbody">
+            <tr
+              class="ant-table-row ant-table-row-level-0"
+              v-for="(scores, roundNb) in scoreTable.rows"
+              :key="roundNb"
+            >
+              <th>{{ roundNb }}</th>
+              <td v-for="(score, index) in scores" :key="index">
+                <Score :score="score" />
+              </td>
+            </tr>
+            <tr class="ant-table-row ant-table-row-level-0">
+              <th
+                v-for="(total, index) in scoreTable.totals"
+                :key="index"
+                class="total"
+              >
+                <h2>{{ total }}</h2>
+              </th>
+            </tr>
+          </tbody>
+        </table>
+      </div>
       <div class="return-game-rooms">
         <a-button type="primary" @click="goToGameRooms"
           >Repartir aux salons</a-button
@@ -75,7 +76,6 @@ export default class ScorePanel extends Vue {
   }
 
   onClose() {
-    console.log("emit close");
     this.$emit("close");
   }
 }
@@ -91,5 +91,16 @@ export default class ScorePanel extends Vue {
   margin-top: 30px;
   display: flex;
   justify-content: center;
+}
+.ant-drawer-content-wrapper {
+  width: 80% !important;
+}
+.ant-drawer-header {
+  text-align: center;
+}
+.ant-drawer-body {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 </style>

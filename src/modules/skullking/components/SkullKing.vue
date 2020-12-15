@@ -143,7 +143,6 @@ import { Component, Prop, Vue, Watch } from "vue-property-decorator";
 import Player from "@/modules/skullking/model/player";
 import CardComp from "@/modules/skullking/components/Card.vue";
 import Announce from "@/modules/skullking/components/Announce.vue";
-import Score from "@/modules/skullking/components/Score.vue";
 import ScorePanel from "@/modules/skullking/components/ScorePanel.vue";
 import Skullking from "@/modules/skullking/model/skullking";
 import Card from "@/modules/skullking/model/card";
@@ -155,7 +154,7 @@ import GamePlayer from "@/modules/skullking/components/GamePlayer.vue";
 import { capitalize } from "lodash-es";
 
 @Component({
-  components: { GamePlayer, CardComp, Announce, Score, ScorePanel },
+  components: { GamePlayer, CardComp, Announce, ScorePanel },
   filters: { capitalize }
 })
 export default class SkullKing extends Vue {
@@ -176,7 +175,6 @@ export default class SkullKing extends Vue {
   }
 
   toggleScore() {
-    console.log(this.showScore);
     this.showScore = !this.showScore;
   }
 

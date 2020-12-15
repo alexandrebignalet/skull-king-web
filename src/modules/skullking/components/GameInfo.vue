@@ -1,7 +1,7 @@
 <template>
   <div class="game-info">
     <h3 v-if="game.isAnnouncementPhase">YO OH OH</h3>
-    <div v-if="game.currentPlayerRoundScore(playerId)" class="fold-info">
+    <div v-else-if="game.currentPlayerRoundScore(playerId)" class="fold-info">
       <Score :score="prs.score" :round-nb="prs.roundNb" />
     </div>
   </div>
