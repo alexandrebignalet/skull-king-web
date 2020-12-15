@@ -18,8 +18,8 @@ export default class Skullking {
   public readonly scoreBoard: PlayerRoundScore[];
 
   static of(game: any): Skullking {
-    const fold = game.fold ? game.fold : [];
-    const scoreBoard = game.score_board ? game.score_board : [];
+    const fold = game.fold ? Object.values(game.fold) : [];
+    const scoreBoard = game.score_board ? Object.values(game.score_board) : [];
     const phase =
       game.phase == SkullkingPhase.ANNOUNCEMENT
         ? SkullkingPhase.ANNOUNCEMENT
@@ -92,19 +92,24 @@ export default class Skullking {
     rows: { [key: number]: Score[] };
     totals: any[];
   } {
-    const columns = ["", ...this.players];
-    const rows = this.scoreBoard.reduce(
-      (acc: { [key: number]: Score[] }, scorePerRound) => {
+    const players = [...this.players].sort();
+    const currentRoundScoreIfAnnouncementPhase = (prs: PlayerRoundScore) =>
+      this.isAnnouncementPhase ? prs.roundNb !== this.roundNb : true;
+
+    const columns = ["", ...players];
+    const rows = this.scoreBoard
+      .filter(currentRoundScoreIfAnnouncementPhase)
+      .sort((a, b) => a.playerId.localeCompare(b.playerId))
+      .reduce((acc: { [key: number]: Score[] }, scorePerRound) => {
         return {
           ...acc,
           [scorePerRound.roundNb]: acc[scorePerRound.roundNb]
             ? acc[scorePerRound.roundNb].concat(scorePerRound.score)
             : [scorePerRound.score]
         };
-      },
-      {}
-    );
-    const totals = this.players.map(playerId => {
+      }, {});
+
+    const totals = players.map(playerId => {
       const scoresForPlayer = this.scoreBoard
         .filter(prs => prs.playerId === playerId)
         .map(prs => prs.points);

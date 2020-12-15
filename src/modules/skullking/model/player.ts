@@ -6,7 +6,7 @@ export default class Player {
   public cards: Card[];
 
   static of(player: any) {
-    const cards = player.cards ? player.cards : [];
+    const cards = player.cards ? Object.values(player.cards) : [];
     return new Player(
       player.id,
       player.is_current,
