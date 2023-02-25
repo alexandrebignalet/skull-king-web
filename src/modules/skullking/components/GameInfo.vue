@@ -24,7 +24,7 @@ export default class GameInfo extends Vue {
   }
 }
 </script>
-<style lang="scss" media="all">
+<style media="all">
 .fold-info {
   display: flex;
   flex-direction: row;

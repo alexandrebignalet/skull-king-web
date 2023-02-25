@@ -1,17 +1,18 @@
 import Vue from "vue";
-import Antd from "ant-design-vue";
-import "ant-design-vue/dist/antd.css";
-import "@/antd.less";
 import App from "./App.vue";
 import router from "./router";
 import store from "./store";
-import "@/axios.auth-interceptor";
 import "@/modules/firebase/firebase.module";
 import { watchCurrentUserAuthState } from "@/modules/auth/auth.module";
+import "bootstrap/dist/css/bootstrap.css";
+import "bootstrap-vue/dist/bootstrap-vue.css";
+import "./app.css";
+import { BootstrapVue, IconsPlugin } from "bootstrap-vue";
 
 Vue.config.productionTip = false;
 
-Vue.use(Antd);
+Vue.use(BootstrapVue);
+Vue.use(IconsPlugin);
 
 watchCurrentUserAuthState()
   .then(() => {

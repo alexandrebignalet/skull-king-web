@@ -29,10 +29,10 @@ const siteStore: Module<any, any> = {
 
 export default siteStore;
 
-export function withLoading<T>(
-  asyncFn: (...args: any) => Promise<T>
-): (...args: any[]) => Promise<T> {
-  return async (...args: any[]) => {
+export function withLoading<T, ARGT>(
+  asyncFn: (...args: ARGT[]) => Promise<T>
+): (...args: ARGT[]) => Promise<T> {
+  return async (...args: ARGT[]) => {
     await store.dispatch("site/changeLoading", true);
     return asyncFn(...args).finally(() =>
       store.dispatch("site/changeLoading", false)

@@ -80,6 +80,7 @@
         />
         <CardComp
           :card="card"
+          :isBlackrock="isBlackrock"
           v-for="(card, index) in foldCards"
           :key="index"
         />
@@ -118,14 +119,15 @@
             class="skullking-bottom-current-player-hand-card"
             :card="card"
             v-for="(card, index) in actualPlayer.cards"
+            :isBlackrock="isBlackrock"
             :key="index"
             @click.native="playCard(card)"
           />
         </div>
         <div class="skullking-bottom-current-player-end">
-          <a-button type="default" @click="toggleScore" shape="round"
-            >Scores</a-button
-          >
+          <b-button type="default" @click="toggleScore" shape="round"
+            >Scores
+          </b-button>
         </div>
       </div>
     </div>
@@ -151,11 +153,9 @@ import GameRoom from "@/modules/game_room/game_room";
 import { CardType } from "@/modules/skullking/model/card-type.enum";
 import { ScaryMaryUsage } from "@/modules/skullking/model/scary-mary-usage.enum";
 import GamePlayer from "@/modules/skullking/components/GamePlayer.vue";
-import { capitalize } from "lodash-es";
 
 @Component({
-  components: { GamePlayer, CardComp, Announce, ScorePanel },
-  filters: { capitalize }
+  components: { GamePlayer, CardComp, Announce, ScorePanel }
 })
 export default class SkullKing extends Vue {
   @Prop() private game?: Skullking;
@@ -168,6 +168,7 @@ export default class SkullKing extends Vue {
   private actualPlayer?: Player = this.player;
   private playerNames: { [key: string]: string } | undefined = this
     .currentGameRoom?.userNamesPerId;
+  private isBlackrock = !!this.currentGameRoom?.isBlackrock;
   private showScore = false;
 
   get showScoreDrawer(): boolean {
@@ -207,18 +208,27 @@ export default class SkullKing extends Vue {
 
   playCard(card: Card) {
     if (this.isLoading) {
-      return this.$message.warn("Attteeends ça charge !");
+      return this.$bvToast.toast("Attteeends ça charge !", {
+        variant: "warning",
+        autoHideDelay: 5000,
+        appendToast: true,
+        noCloseButton: true
+      });
     }
 
     if (card.type !== CardType.SCARY_MARY) return this.dispatchPlayCard(card);
 
-    this.$confirm({
-      content: "Pirate ou Escape ?",
-      okText: "Pirate",
-      onOk: () => this.dispatchPlayCard(card, ScaryMaryUsage.PIRATE),
-      cancelText: "Escape",
-      onCancel: () => this.dispatchPlayCard(card, ScaryMaryUsage.ESCAPE)
-    });
+    this.$bvModal
+      .msgBoxConfirm("Pirate ou Escape ?", {
+        okTitle: "Pirate",
+        cancelTitle: "Escape"
+      })
+      .then((result: boolean) =>
+        this.dispatchPlayCard(
+          card,
+          result ? ScaryMaryUsage.PIRATE : ScaryMaryUsage.ESCAPE
+        )
+      );
   }
 
   private dispatchPlayCard(card: Card, usage?: ScaryMaryUsage): Promise<void> {
@@ -229,7 +239,12 @@ export default class SkullKing extends Vue {
         card: usage ? { ...card, usage } : card
       })
       .catch((errorMessage: string) => {
-        this.$message.error(errorMessage);
+        this.$bvToast.toast(errorMessage, {
+          variant: "danger",
+          autoHideDelay: 5000,
+          appendToast: true,
+          noCloseButton: true
+        });
       })
       .finally(() => {
         this.cardIdBeingPlayed = null;
@@ -276,92 +291,101 @@ export default class SkullKing extends Vue {
   }
 }
 </script>
-<style lang="scss">
+<style>
 .skullking {
   height: 100%;
   display: flex;
   align-items: center;
   flex-direction: column;
+}
 
-  &-top {
-    flex-grow: 1;
-    width: 100%;
-    display: flex;
+.skullking-top {
+  flex-grow: 1;
+  width: 100%;
+  display: flex;
+}
 
-    &-left-one {
-      flex-grow: 1;
-    }
-    &-left-two {
-      flex-grow: 1;
-    }
-    &-middle {
-      flex-grow: 2;
-      background-color: white;
-    }
-    &-right-one {
-      flex-grow: 1;
-    }
-    &-right-two {
-      flex-grow: 1;
-      padding-top: 20px;
-    }
-  }
+.skullking-top-left-one {
+  flex-grow: 1;
+}
 
-  &-middle {
-    flex-grow: 2;
-    width: 100%;
-    display: flex;
+.skullking-top-left-two {
+  flex-grow: 1;
+}
 
-    &-left-slot {
-      flex-grow: 1;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-    }
-    &-fold-slot {
-      flex-grow: 6;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-    }
-    &-right-slot {
-      flex-grow: 1;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-    }
-  }
+.skullking-top-middle {
+  flex-grow: 2;
+  background-color: white;
+}
 
-  &-bottom {
-    width: 100%;
-    &-current-player {
-      display: flex;
+.skullking-top-right-one {
+  flex-grow: 1;
+}
 
-      &-info {
-        flex-grow: 1;
-        display: flex;
-        flex-direction: column-reverse;
+.skullking-top-right-two {
+  flex-grow: 1;
+  padding-top: 20px;
+}
 
-        &-base {
-        }
-      }
-      &-hand {
-        display: flex;
-        justify-content: center;
-        flex-grow: 6;
+.skullking-middle {
+  flex-grow: 2;
+  width: 100%;
+  display: flex;
+}
 
-        &-card {
-          cursor: pointer;
-        }
-      }
-      &-end {
-        flex-grow: 1;
-        display: flex;
-        justify-content: flex-start;
-        align-items: flex-end;
-        padding-bottom: 30px;
-      }
-    }
-  }
+.skullking-middle-left-slot {
+  flex-grow: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.skullking-middle-fold-slot {
+  flex-grow: 6;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.skullking-middle-right-slot {
+  flex-grow: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.skullking-bottom {
+  width: 100%;
+}
+
+.skullking-bottom-current-player {
+  display: flex;
+}
+
+.skullking-bottom-current-player-info {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column-reverse;
+}
+
+.skullking-bottom-current-player-info-base {
+}
+
+.skullking-bottom-current-player-hand {
+  display: flex;
+  justify-content: center;
+  flex-grow: 6;
+}
+
+.skullking-bottom-current-player-hand-card {
+  cursor: pointer;
+}
+
+.skullking-bottom-current-player-end {
+  flex-grow: 1;
+  display: flex;
+  justify-content: flex-start;
+  align-items: flex-end;
+  padding-bottom: 30px;
 }
 </style>

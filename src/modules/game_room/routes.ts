@@ -13,7 +13,6 @@ const routes: RouteConfig[] = [
     }),
     beforeEnter: async (to, from, next) => {
       if (!store.getters["auth/isAuthenticated"]) return next({ name: "auth" });
-
       await store.dispatch("user/bindUser");
       await store.dispatch("gameRoom/bindGameRooms");
       next();

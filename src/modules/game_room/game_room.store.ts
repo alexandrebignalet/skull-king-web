@@ -1,8 +1,12 @@
 import { Module } from "vuex";
 import { firebaseAction } from "vuexfire";
 import db from "@/modules/firebase/firebase.module";
-import axios from "axios";
 import GameRoom from "@/modules/game_room/game_room";
+import { User } from "@/modules/auth/auth.store";
+import {
+  CreateGameRoomForm,
+  variants
+} from "@/modules/game_room/GameRooms.vue";
 
 const gameRoomStore: Module<any, any> = {
   namespaced: true,
@@ -32,38 +36,74 @@ const gameRoomStore: Module<any, any> = {
   },
 
   actions: {
-    async createGameRoom() {
-      return axios
-        .post(`${process.env.VUE_APP_SERVER_BASE_URL}/game_rooms`)
-        .catch(err => console.error(err));
+    async createGameRoom({ rootGetters }, form: CreateGameRoomForm) {
+      const user: User = rootGetters["auth/user"];
+      return fetch(`${process.env.VUE_APP_SERVER_BASE_URL}/game_rooms`, {
+        method: "POST",
+        mode: "cors",
+        headers: {
+          "Content-type": "application/json",
+          Authorization: `Bearer ${user.idToken}`
+        },
+        body:
+          form.variant === variants.CLASSIC
+            ? undefined
+            : JSON.stringify({
+                // eslint-disable-next-line @typescript-eslint/camelcase
+                with_kraken: form.kraken,
+                // eslint-disable-next-line @typescript-eslint/camelcase
+                with_whale: form.whiteWhale,
+                // eslint-disable-next-line @typescript-eslint/camelcase
+                with_butins: form.butins
+              })
+      }).catch(err => console.error(err));
     },
 
-    async joinGameRoom(_, gameRoomId) {
-      return axios
-        .post(
-          `${process.env.VUE_APP_SERVER_BASE_URL}/game_rooms/${gameRoomId}/users`
-        )
-        .catch(err => console.error(err));
+    async joinGameRoom({ rootGetters }, gameRoomId) {
+      const user: User = rootGetters["auth/user"];
+      return fetch(
+        `${process.env.VUE_APP_SERVER_BASE_URL}/game_rooms/${gameRoomId}/users`,
+        {
+          mode: "cors",
+          method: "POST",
+          headers: {
+            "Content-type": "application/json",
+            Authorization: `Bearer ${user.idToken}`
+          }
+        }
+      ).catch(err => console.error(err));
     },
 
-    async kickFromGameRoom(_, { gameRoomId, userId }) {
-      return axios
-        .delete(
-          `${process.env.VUE_APP_SERVER_BASE_URL}/game_rooms/${gameRoomId}/users/${userId}`
-        )
-        .catch(err => console.error(err));
+    async kickFromGameRoom({ rootGetters }, { gameRoomId, userId }) {
+      const user: User = rootGetters["auth/user"];
+      return fetch(
+        `${process.env.VUE_APP_SERVER_BASE_URL}/game_rooms/${gameRoomId}/users/${userId}`,
+        {
+          method: "DELETE",
+          mode: "cors",
+          headers: {
+            Authorization: `Bearer ${user.idToken}`
+          }
+        }
+      ).catch(err => console.error(err));
     },
 
-    async startGame(_, gameRoomId) {
-      return axios
-        .post(
-          `${process.env.VUE_APP_SERVER_BASE_URL}/game_rooms/${gameRoomId}/launch`
-        )
-        .catch(err => console.error(err));
+    async startGame({ rootGetters }, gameRoomId) {
+      const user: User = rootGetters["auth/user"];
+
+      return fetch(
+        `${process.env.VUE_APP_SERVER_BASE_URL}/game_rooms/${gameRoomId}/launch`,
+        {
+          mode: "cors",
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${user.idToken}`
+          }
+        }
+      ).catch(err => console.error(err));
     },
 
-    bindGameRooms: firebaseAction(({ bindFirebaseRef, rootGetters }) => {
-      const currentUserId = rootGetters["auth/user"].id;
+    bindGameRooms: firebaseAction(({ bindFirebaseRef }) => {
       return bindFirebaseRef("list", db.ref(`game_rooms`));
     })
   }

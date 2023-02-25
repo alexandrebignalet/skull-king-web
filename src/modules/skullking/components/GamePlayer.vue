@@ -1,23 +1,21 @@
 <template>
   <div class="game-player">
     <div class="avatar-wrapper" :class="{ active: userId === currentPlayerId }">
-      <a-avatar
+      <b-avatar
         src="https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png"
       />
     </div>
-    <h3>{{ userName | capitalize }}</h3>
+    <h3 v-if="userName">{{ userName.toUpperCase() }}</h3>
     <GameInfo :game="game" :player-id="userId" />
   </div>
 </template>
 <script lang="ts">
 import { Component, Prop, Vue } from "vue-property-decorator";
-import { capitalize } from "lodash-es";
 import GameInfo from "@/modules/skullking/components/GameInfo.vue";
 import Skullking from "@/modules/skullking/model/skullking";
 
 @Component({
-  components: { GameInfo },
-  filters: { capitalize }
+  components: { GameInfo }
 })
 export default class GamePlayer extends Vue {
   @Prop() game?: Skullking;
@@ -33,7 +31,7 @@ export default class GamePlayer extends Vue {
   }
 }
 </script>
-<style lang="scss" media="all">
+<style media="all">
 .avatar-wrapper {
   border-radius: 50%;
   display: inline-block;
@@ -45,11 +43,12 @@ export default class GamePlayer extends Vue {
 .active {
   border: 1px solid red;
 }
+
 @media (max-width: 1000px) {
   .game-player {
     font-size: 12px;
   }
 }
 </style>
-<style lang="scss" media="screen"></style>
-<style lang="scss" media="handheld"></style>
+<style media="screen"></style>
+<style media="handheld"></style>

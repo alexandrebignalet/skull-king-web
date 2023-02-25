@@ -1,15 +1,15 @@
 <template>
   <div>
-    <a-button @click="toggleModal">
-      <a-icon type="login" />
+    <b-button @click="toggleModal">
+      <b-icon type="login" />
       Se connecter
-    </a-button>
-    <a-modal v-model="visible" title="Connection" :destroyOnClose="true">
-      <a-row type="flex">
-        <a-col :span="24">
-          <a-form layout="vertical">
-            <a-form-item label="Email">
-              <a-input
+    </b-button>
+    <b-modal v-model="visible" title="Connection" :destroyOnClose="true">
+      <b-row type="flex">
+        <b-col :span="24">
+          <b-form layout="vertical">
+            <b-form-group label="Email">
+              <b-input
                 placeholder="Email"
                 v-model="form.email"
                 type="email"
@@ -18,16 +18,16 @@
                 autoFocus
                 autocomplete
               >
-                <a-icon
+                <b-icon
                   slot="prefix"
                   type="mail"
                   style="color:rgba(0,0,0,.25)"
                 />
-              </a-input>
-            </a-form-item>
+              </b-input>
+            </b-form-group>
 
-            <a-form-item label="Mot de passe">
-              <a-input-password
+            <b-form-group label="Mot de passe">
+              <b-input
                 placeholder="Mot de passe"
                 v-model="form.password"
                 required
@@ -37,23 +37,23 @@
                 autocomplete
                 @pressEnter="submit"
               >
-                <a-icon
+                <b-icon
                   slot="prefix"
                   type="lock"
                   style="color:rgba(0,0,0,.25)"
                 />
-              </a-input-password>
-            </a-form-item>
-          </a-form>
+              </b-input>
+            </b-form-group>
+          </b-form>
 
           <Alert type="error" :alert="error" />
-        </a-col>
-      </a-row>
-      <template slot="footer">
-        <a-button key="back" @click="toggleModal" :disabled="isSigningIn">
+        </b-col>
+      </b-row>
+      <template #modal-footer>
+        <b-button key="back" @click="toggleModal" :disabled="isSigningIn">
           Annuler
-        </a-button>
-        <a-button
+        </b-button>
+        <b-button
           key="submit"
           type="primary"
           @click="submit"
@@ -61,14 +61,14 @@
           :loading="isSigningIn"
         >
           Se connecter
-        </a-button>
+        </b-button>
       </template>
-    </a-modal>
+    </b-modal>
   </div>
 </template>
 <script lang="ts">
 import { Component, Vue } from "vue-property-decorator";
-import { ErrorType } from "@/modules/auth/error-type.enum";
+import { errorTypes } from "@/modules/auth/error-type.enum";
 import Alert from "@/modules/site/alert/Alert.vue";
 
 @Component({ components: { Alert } })
@@ -81,7 +81,7 @@ export default class Login extends Vue {
   private isSigningIn = false;
 
   get error(): string {
-    return this.$store.getters["auth/errorOf"](ErrorType.LOGIN);
+    return this.$store.getters["auth/errorOf"](errorTypes.LOGIN);
   }
 
   get isDisabled(): boolean {
@@ -94,6 +94,7 @@ export default class Login extends Vue {
 
   submit() {
     this.isSigningIn = true;
+    console.log("login");
     this.$store
       .dispatch("auth/login", this.form)
       .then(() => {

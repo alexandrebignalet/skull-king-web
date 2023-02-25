@@ -1,5 +1,3 @@
-import axios, { AxiosInstance } from "axios";
-
 enum ErrorCode {
   INTERNAL = "INTERNAL",
   ALREADY_ANNOUNCED = "ALREADY_ANNOUNCED",
@@ -9,8 +7,9 @@ enum ErrorCode {
   ALL_MUST_ANNOUNCE = "ALL_MUST_ANNOUNCE"
 }
 
-function mapError(response: { data: { code: string; message: string } }) {
-  const code = response.data.code as ErrorCode;
+function mapError(response: { code: string; message: string }) {
+  console.log(response);
+  const code = response.code as ErrorCode;
   switch (code) {
     case ErrorCode.ALL_MUST_ANNOUNCE:
       return "Tous les joueurs n'ont pas encore annoncé";
@@ -19,7 +18,7 @@ function mapError(response: { data: { code: string; message: string } }) {
     case ErrorCode.CARD_NOT_ALLOWED:
       return "Tu ne peux pas jouer cette carte";
     case ErrorCode.INTERNAL:
-      return response.data.message;
+      return response.message;
     case ErrorCode.NOT_YOUR_TURN:
       return "Ce n'est pas ton tour de jouer";
     case ErrorCode.OVER:
@@ -28,16 +27,26 @@ function mapError(response: { data: { code: string; message: string } }) {
 }
 
 export default class SkullKingRepository {
-  constructor(private axios: AxiosInstance) {}
+  async playCard(idToken: string, gameId: string, playerId: string, card: any) {
+    const url = `${process.env.VUE_APP_SERVER_BASE_URL}/games/${gameId}/players/${playerId}/play`;
+    return fetch(url, {
+      method: "POST",
+      mode: "cors",
+      headers: {
+        "Content-type": "application/json",
+        Authorization: `Bearer ${idToken}`
+      },
+      body: JSON.stringify({ card })
+    }).then(async response => {
+      const body = await response.json();
 
-  async playCard({ gameId, playerId, card }: any) {
-    return axios
-      .post(
-        `${process.env.VUE_APP_SERVER_BASE_URL}/games/${gameId}/players/${playerId}/play`,
-        { card }
-      )
-      .catch(({ response }) => {
-        throw mapError(response);
-      });
+      if (response.ok) {
+        return body;
+      }
+
+      console.log(body);
+
+      throw mapError(body);
+    });
   }
 }

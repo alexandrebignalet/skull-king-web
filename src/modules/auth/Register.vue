@@ -1,31 +1,31 @@
 <template>
   <div>
-    <a-button @click="toggleModal">Créer un compte</a-button>
-    <a-modal
+    <b-button @click="toggleModal">Créer un compte</b-button>
+    <b-modal
       v-model="visible"
       title="Créer un compte"
       :destroyOnClose="true"
       @ok="submit"
     >
-      <a-row type="flex">
-        <a-col :span="24">
+      <b-row type="flex">
+        <b-col :span="24">
           <a-form layout="vertical">
-            <a-form-item label="Pseudo">
+            <b-form-item label="Pseudo">
               <a-input
                 placeholder="Pseudo"
                 v-model="form.name"
                 required
                 autoFocus
               >
-                <a-icon
+                <b-icon
                   slot="prefix"
                   type="user"
                   style="color:rgba(0,0,0,.25)"
                 />
               </a-input>
-            </a-form-item>
+            </b-form-item>
 
-            <a-form-item label="Email">
+            <b-form-item label="Email">
               <a-input
                 placeholder="Email"
                 v-model="form.email"
@@ -33,15 +33,15 @@
                 value
                 type="email"
               >
-                <a-icon
+                <b-icon
                   slot="prefix"
                   type="mail"
                   style="color:rgba(0,0,0,.25)"
                 />
               </a-input>
-            </a-form-item>
+            </b-form-item>
 
-            <a-form-item label="Mot de passe">
+            <b-form-item label="Mot de passe">
               <a-input-password
                 placeholder="Mot de passe"
                 v-model="form.password"
@@ -50,38 +50,38 @@
                 type="password"
                 @pressEnter="submit"
               >
-                <a-icon
+                <b-icon
                   slot="prefix"
                   type="lock"
                   style="color:rgba(0,0,0,.25)"
                 />
               </a-input-password>
-            </a-form-item>
+            </b-form-item>
           </a-form>
 
           <Alert type="error" :alert="error" />
-        </a-col>
-      </a-row>
+        </b-col>
+      </b-row>
       <template slot="footer">
-        <a-button key="back" @click="toggleModal">
+        <b-button key="back" @click="toggleModal">
           Annuler
-        </a-button>
-        <a-button
+        </b-button>
+        <b-button
           key="submit"
           type="primary"
           @click="submit"
           :disabled="isDisabled"
         >
           Go
-        </a-button>
+        </b-button>
       </template>
-    </a-modal>
+    </b-modal>
   </div>
 </template>
 
 <script lang="ts">
 import { Component, Vue } from "vue-property-decorator";
-import { ErrorType } from "@/modules/auth/error-type.enum";
+import { errorTypes } from "@/modules/auth/error-type.enum";
 import Alert from "@/modules/site/alert/Alert.vue";
 
 @Component({ components: { Alert } })
@@ -95,7 +95,7 @@ export default class Register extends Vue {
   private isRegistering = false;
 
   get error() {
-    return this.$store.getters["auth/errorOf"](ErrorType.REGISTER);
+    return this.$store.getters["auth/errorOf"](errorTypes.REGISTER);
   }
 
   get isDisabled() {

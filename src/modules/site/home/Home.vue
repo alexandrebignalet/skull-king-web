@@ -1,11 +1,11 @@
 <template>
   <div class="home">
-    <img alt="Vue logo" src="@/assets/skullking.jpeg" />
-    <br />
-    <img src="@/assets/skullking-title.png" />
+    <div class="d-flex justify-content-between">
+      <img src="@/assets/skullking-title.png" />
+      <Logout v-if="isAuthenticated" />
+    </div>
 
     <router-view />
-    <Logout v-if="isAuthenticated" />
   </div>
 </template>
 <script lang="ts">
@@ -19,14 +19,3 @@ export default class Home extends Vue {
   }
 }
 </script>
-<style lang="scss">
-.container {
-  padding: 0 600px 0 600px;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-}
-.heavy-title {
-  padding: 30px 0 20px;
-}
-</style>

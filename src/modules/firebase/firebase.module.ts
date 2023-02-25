@@ -17,8 +17,8 @@ firebase.initializeApp(configOptions);
 
 const db = firebase.database();
 
-if (process.env.NODE_ENV === "development") {
-  db.useEmulator("localhost", 9000);
-}
+// if (process.env.NODE_ENV === "development") {
+//   db.useEmulator("localhost", 9000);
+// }
 
 export default db;

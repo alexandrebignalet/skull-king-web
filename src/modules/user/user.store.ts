@@ -1,13 +1,13 @@
-import firebase from "firebase";
 import { Module } from "vuex";
-import UserCredential = firebase.auth.UserCredential;
-import router from "../../router";
-import { ErrorType } from "@/modules/auth/error-type.enum";
-import { firebaseAction, firestoreAction } from "vuexfire";
+import { firebaseAction } from "vuexfire";
 import db from "@/modules/firebase/firebase.module";
-import GameUser from "@/modules/game_room/game_user";
+import GameUser, { RawUser } from "@/modules/game_room/game_user";
 
-const gameRoomStore: Module<any, any> = {
+type GameRoomState = {
+  user: RawUser | null;
+};
+
+const gameRoomStore: Module<GameRoomState, any> = {
   namespaced: true,
 
   state: {
@@ -15,7 +15,7 @@ const gameRoomStore: Module<any, any> = {
   },
 
   getters: {
-    currentUser: (state: any) =>
+    currentUser: (state: GameRoomState) =>
       state.user == null ? null : GameUser.of(state.user)
   },
 

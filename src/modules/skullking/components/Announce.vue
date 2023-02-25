@@ -1,13 +1,13 @@
 <template>
   <div>
-    <a-button
+    <b-button
       type="default"
       @click="announce(choice)"
       v-for="choice in choices"
       :key="choice"
     >
       {{ choice }}
-    </a-button>
+    </b-button>
   </div>
 </template>
 <script lang="ts">
@@ -23,7 +23,12 @@ export default class Announce extends Vue {
 
   announce(count: number) {
     if (this.isLoading) {
-      return this.$message.warn("Attteeends ça charge !");
+      return this.$bvToast.toast("Attteeends ça charge !", {
+        variant: "warning",
+        autoHideDelay: 5000,
+        appendToast: true,
+        noCloseButton: true
+      });
     }
 
     this.$store.dispatch("skullKing/announce", count);

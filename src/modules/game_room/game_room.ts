@@ -1,4 +1,13 @@
-import GameUser from "@/modules/game_room/game_user";
+import GameUser, { RawUser } from "@/modules/game_room/game_user";
+
+export type RawRoom = {
+  id: string;
+  creation_date: number;
+  creator: string;
+  game_id: string;
+  users: RawUser[];
+  configuration?: any;
+};
 
 export default class GameRoom {
   public id: string;
@@ -6,16 +15,16 @@ export default class GameRoom {
   public users: GameUser[];
   public gameId?: string;
   public creationDate: number;
+  public isBlackrock: boolean;
 
-  static of(rawGameRoom: any): GameRoom {
-    const gameUsers = rawGameRoom.users.map(
-      (it: { id: string; name: string }) => GameUser.of(it)
-    );
+  static of(rawGameRoom: RawRoom): GameRoom {
+    const gameUsers = rawGameRoom.users.map((it: RawUser) => GameUser.of(it));
     return new GameRoom(
       rawGameRoom.id,
       rawGameRoom.creator,
       gameUsers,
       rawGameRoom.creation_date,
+      !!rawGameRoom.configuration,
       rawGameRoom.game_id
     );
   }
@@ -25,6 +34,7 @@ export default class GameRoom {
     creator: string,
     users: GameUser[],
     creationDate: number,
+    isBlackrock: boolean,
     gameId?: string
   ) {
     this.id = id;
@@ -32,6 +42,7 @@ export default class GameRoom {
     this.users = users;
     this.gameId = gameId;
     this.creationDate = creationDate;
+    this.isBlackrock = isBlackrock;
   }
 
   get retrieveCreator() {

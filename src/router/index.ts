@@ -14,7 +14,7 @@ const routes: Array<RouteConfig> = [
     children: [...authRoutes, ...gameRoomsRoutes]
   },
   ...skullKingRoutes,
-  { path: "*", redirect: to => ({ name: "auth" }) }
+  { path: "*", redirect: () => ({ name: "auth" }) }
 ];
 
 const router = new VueRouter({

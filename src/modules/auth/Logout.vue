@@ -1,6 +1,8 @@
 <template>
-  <div class="spaced">
-    <a @click="logout">Se déconnecter</a>
+  <div class="d-flex flex-column justify-content-center">
+    <b-button variant="danger" @click="logout">
+      <b-icon icon="box-arrow-right" />
+    </b-button>
   </div>
 </template>
 <script lang="ts">
@@ -13,8 +15,3 @@ export default class Logout extends Vue {
   }
 }
 </script>
-<style lang="scss">
-.spaced {
-  padding: 50px 0 50px;
-}
-</style>

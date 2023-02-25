@@ -1,41 +1,56 @@
 import firebase from "firebase";
 import { Module } from "vuex";
-import UserCredential = firebase.auth.UserCredential;
 import router from "../../router";
-import { ErrorType } from "@/modules/auth/error-type.enum";
+import { ErrorType, errorTypes } from "@/modules/auth/error-type.enum";
+import UserCredential = firebase.auth.UserCredential;
 
 const CLEAR_USER = "CLEAR_USER";
 const UPDATE_USER = "UPDATE_USER";
 const SET_AUTH_ERROR = "SET_AUTH_ERROR";
 
-const authStore: Module<any, any> = {
+export type User = {
+  id: string;
+  idToken: string;
+  name: string;
+  email: string;
+};
+
+type AuthState = {
+  user: User | null;
+  errors: Record<ErrorType, string | null>;
+};
+
+const authStore: Module<AuthState, any> = {
   namespaced: true,
 
   state: {
     user: null,
-    errors: Object.keys(ErrorType).reduce(
-      (acc, type) => ({ ...acc, [type]: null }),
-      {}
+    errors: Object.values(errorTypes).reduce(
+      (acc, type: ErrorType) => ({ ...acc, [type]: null }),
+      errorTypes
     )
   },
 
   getters: {
-    errorOf: (state: any) => (key: ErrorType) => state.errors[key],
-    isAuthenticated: (state: any) => state.user !== null,
-    user: (state: any) => state.user
+    errorOf: (state: AuthState) => (key: ErrorType) => state.errors[key],
+    isAuthenticated: (state: AuthState) => state.user !== null,
+    user: (state: AuthState) => state.user
   },
 
   mutations: {
-    [CLEAR_USER](state: any) {
+    [CLEAR_USER](state: AuthState) {
       state.user = null;
     },
-    [UPDATE_USER](state: any, userInfo) {
+    [UPDATE_USER](state: AuthState, userInfo: User) {
       state.user = {
         ...state.user,
         ...userInfo
       };
     },
-    [SET_AUTH_ERROR](state: any, { key, message }) {
+    [SET_AUTH_ERROR](
+      state: AuthState,
+      { key, message }: { key: ErrorType; message: string }
+    ) {
       const update = message ? { message, closeAfter: 5000 } : null;
       state.errors = {
         ...state.errors,
@@ -55,12 +70,12 @@ const authStore: Module<any, any> = {
             email: user?.email,
             id: user?.uid
           });
-          commit(SET_AUTH_ERROR, { key: ErrorType.LOGIN, message: null });
+          commit(SET_AUTH_ERROR, { key: errorTypes.LOGIN, message: null });
           return router.push({ name: "game_rooms" });
         })
         .catch((err: { message: string }) => {
           commit(SET_AUTH_ERROR, {
-            key: ErrorType.LOGIN,
+            key: errorTypes.LOGIN,
             message: err.message
           });
 
@@ -74,12 +89,12 @@ const authStore: Module<any, any> = {
         .createUserWithEmailAndPassword(email, password)
         .then(async (data: firebase.auth.UserCredential) => {
           await dispatch("updateUserProfile", { user: data.user, email, name });
-          commit(SET_AUTH_ERROR, { key: ErrorType.REGISTER, message: null });
+          commit(SET_AUTH_ERROR, { key: errorTypes.REGISTER, message: null });
           return router.push({ name: "game_rooms" });
         })
         .catch(err => {
           commit(SET_AUTH_ERROR, {
-            key: ErrorType.REGISTER,
+            key: errorTypes.REGISTER,
             message: err.message
           });
           throw err;
@@ -118,13 +133,13 @@ const authStore: Module<any, any> = {
         .then(() => {
           commit(UPDATE_USER, { name, email, id: user.uid });
           commit(SET_AUTH_ERROR, {
-            key: [ErrorType.UPDATE_USER],
+            key: [errorTypes.UPDATE_USER],
             message: null
           });
         })
         .catch((err: { message: string }) => {
           commit(SET_AUTH_ERROR, {
-            key: [ErrorType.UPDATE_USER],
+            key: [errorTypes.UPDATE_USER],
             message: err.message
           });
         });

@@ -36,16 +36,4 @@ export default class Card {
     this.usage = usage;
     this.name = name;
   }
-
-  get path() {
-    let format;
-    if (this.type == CardType.COLORED) {
-      format = `${this.color}_${this.value}`;
-    } else if (this.type == CardType.PIRATE) {
-      format = `${CardType.PIRATE}_${this.name}`;
-    } else {
-      format = this.type;
-    }
-    return `../../game/cards/${format.toLowerCase()}.png`;
-  }
 }
